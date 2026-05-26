@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Agent guidance for the Awake repo.
+Agent guidance for the Awaker repo.
 
 ## Agent skills
 
