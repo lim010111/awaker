@@ -1,0 +1,21 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Editor (per-developer)
+.idea/
+*.swp
+*.swo
+
+# Temporary
+*.tmp
+*.bak
