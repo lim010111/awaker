@@ -1,0 +1,6 @@
+# Paths that are gitignored but should still be copied into git worktrees.
+# One path per line. Useful for .env files, local credentials, and tool
+# state you want available when working in a worktree but never committed.
+
+.env
+.env.local
