@@ -11,16 +11,25 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ServiceInfo
+import android.hardware.SensorManager
+import android.os.BatteryManager
 import android.os.Build
 import android.os.IBinder
+import android.os.SystemClock
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import com.awaker.core.Tunables
 import com.awaker.data.AppDatabase
 import com.awaker.data.SessionRepository
+import com.awaker.logging.JsonlFileSink
+import com.awaker.logging.LogSchema
+import com.awaker.logging.RecordingController
+import com.awaker.logging.SensorCapture
+import com.awaker.logging.TimeSource
 import com.awaker.session.EndReason
 import com.awaker.session.SessionTracker
 import com.awaker.ui.MainActivity
+import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -43,6 +52,7 @@ class TrackerService : Service() {
     private val tracker = SessionTracker()
     private lateinit var foregroundSource: ForegroundAppSource
     private lateinit var repository: SessionRepository
+    private lateinit var recording: RecordingController
 
     @Volatile
     private var screenOn = true
@@ -52,7 +62,9 @@ class TrackerService : Service() {
             when (intent?.action) {
                 Intent.ACTION_SCREEN_OFF -> screenOn = false
                 Intent.ACTION_SCREEN_ON -> screenOn = true
+                else -> return
             }
+            recording.onScreen(screenOn, System.currentTimeMillis())
         }
     }
 
@@ -60,6 +72,26 @@ class TrackerService : Service() {
         super.onCreate()
         foregroundSource = ForegroundAppSource(getSystemService(UsageStatsManager::class.java))
         repository = SessionRepository(AppDatabase.get(this).sessionDao())
+
+        val appVersion = runCatching {
+            packageManager.getPackageInfo(packageName, 0).versionName
+        }.getOrNull() ?: "?"
+        recording = RecordingController(
+            time = object : TimeSource {
+                override fun wallMs() = System.currentTimeMillis()
+                override fun elapsedNs() = SystemClock.elapsedRealtimeNanos()
+            },
+            sensors = SensorCapture(getSystemService(SensorManager::class.java)),
+            sinkFactory = { sessionId, _ ->
+                JsonlFileSink(File(getExternalFilesDir(null), "logs/awaker-$sessionId.jsonl"))
+            },
+            headerFor = { sessionId, pkg, wallMs, elapsedNs ->
+                LogSchema.header(
+                    sessionId, pkg, wallMs, elapsedNs,
+                    model = Build.MODEL, sdk = Build.VERSION.SDK_INT, app = appVersion,
+                )
+            },
+        )
 
         ServiceCompat.startForeground(
             this, NOTIFICATION_ID, buildNotification(),
@@ -81,12 +113,25 @@ class TrackerService : Service() {
     }
 
     private suspend fun pollLoop() {
+        var lastBatteryAt = 0L
         while (scope.isActive) {
             val now = System.currentTimeMillis()
-            val events =
-                if (screenOn) tracker.onForeground(foregroundSource.currentForeground(now), now)
-                else tracker.onForeground(null, now)
+            val foreground = if (screenOn) foregroundSource.currentForeground(now) else null
+            val events = tracker.onForeground(foreground, now)
             repository.apply(events)
+
+            recording.onSessionEvents(events)
+            recording.onForeground(foreground, tracker.activeSessionId, now)
+            if (recording.hasOpenSinks && now - lastBatteryAt >= BATTERY_LOG_MS) {
+                lastBatteryAt = now
+                val batteryManager = getSystemService(BatteryManager::class.java)
+                recording.onBattery(
+                    pct = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY),
+                    charging = batteryManager.isCharging,
+                    wallMs = now,
+                )
+            }
+
             delay(if (screenOn) Tunables.FOREGROUND_POLL_MS else Tunables.SCREEN_OFF_POLL_MS)
         }
     }
@@ -97,6 +142,8 @@ class TrackerService : Service() {
         // 서비스가 정상 정지되면 열린 세션을 닫아 기록을 깨끗하게 남긴다.
         val events = tracker.endAll(System.currentTimeMillis(), EndReason.TRACKER_STOPPED)
         runBlocking { repository.apply(events) }
+        recording.onSessionEvents(events)
+        recording.closeAll()
         unregisterReceiver(screenReceiver)
         scope.cancel()
         running.value = false
@@ -126,6 +173,7 @@ class TrackerService : Service() {
     companion object {
         private const val CHANNEL_ID = "tracker"
         private const val NOTIFICATION_ID = 1
+        private const val BATTERY_LOG_MS = 60_000L
 
         private val running = MutableStateFlow(false)
 
