@@ -26,3 +26,11 @@ logs/
 
 # merge-gate-local artefact cache (not committed — #30 D3)
 .merge-gate/
+
+# Android / Gradle
+.gradle/
+build/
+local.properties
+.kotlin/
+captures/
+*.keystore

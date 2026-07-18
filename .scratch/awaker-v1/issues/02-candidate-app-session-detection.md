@@ -20,3 +20,12 @@ Status: ready-for-human
 ## Blocked by
 
 None - can start immediately
+
+## Comments
+
+**2026-07-18 (agent)**: 코드 완성 — Kotlin+Compose 스캐폴드(minSdk 29, ADR-0012),
+`SessionTracker` 상태 머신(순수 Kotlin, 5분 룰·짧은 이탈 복귀·앱별 독립 세션 —
+JVM 단위 테스트 10건), UsageStats 증분 폴링 + 화면 꺼짐 감속 폴링, specialUse
+포그라운드 서비스 + 부팅 복구, Room 세션 기록, 권한 상태/서비스 토글/세션 이력
+Compose 화면. AC 4개는 전부 실기기 검증 대상이라 체크하지 않음 — PR 본문의
+"실기기 검증 대기" 목록 참조. 배터리 실측치는 24h 상주 후 이 코멘트 아래에 기록.
