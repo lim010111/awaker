@@ -23,14 +23,14 @@ outside the narrative block; mechanical sections are regenerated every run._
 
 ## awaker-v1
 
-`███░░░░░░░░░░░░░░░░░░░` 4/28 acceptance criteria met (14%)
+`████░░░░░░░░░░░░░░░░░░` 5/28 acceptance criteria met (18%)
 
 | # | Issue | Triage | Criteria | State | Blocked by |
 |---|-------|--------|----------|-------|-----------|
 | 01 | 01 — 문서 위생 정리: 낡은 기획 산출물의 오염원 제거 | `ready-for-agent` | 3/3 | ✅ done | — |
 | 02 | 02 — 후보 앱 세션 감지: 포그라운드 서비스 + 세션 상태 머신 | `ready-for-human` | 0/4 | ⬜ todo | — |
 | 03 | 03 — 센서 raw 로깅 + 수동 export: replay 가능한 공통 타임라인 | `ready-for-human` | 1/4 | 🔵 in-progress | #02 |
-| 04 | 04 — AS 스크롤 운동학 수집 + teacher 룰 v0 | `ready-for-human` | 0/4 | ⛔ blocked | #03 |
+| 04 | 04 — AS 스크롤 운동학 수집 + teacher 룰 v0 | `ready-for-human` | 1/4 | 🔵 in-progress | #03 |
 | 05 | 05 — 체크포인트 오버레이 + 체류 연장 + 북극성 N1 측정 | `ready-for-human` | 0/5 | ⛔ blocked | #04 |
 | 06 | 06 — 자발 종료 + 환기 사운드: face-down 검증 루프 | `ready-for-human` | 0/4 | ⛔ blocked | #05 |
 | 07 | 07 — 오프라인 replay 하네스: 로깅 스키마 AC의 집행자 | `ready-for-human` | 0/4 | ⛔ blocked | #04 |

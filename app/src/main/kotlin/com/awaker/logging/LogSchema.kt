@@ -65,6 +65,30 @@ object LogSchema {
         append('}')
     }
 
+    /** AS 스크롤 운동학 raw (이슈 04, 베타 한정 — ADR-0004). dx/dy는 프레임워크가 못 주면 -1. */
+    fun scroll(tNs: Long, pkg: String, dx: Int, dy: Int): String =
+        "{\"type\":\"scroll\",\"t\":$tNs,\"pkg\":\"${escape(pkg)}\",\"dx\":$dx,\"dy\":$dy}"
+
+    /** teacher 룰 전이 (이슈 04) — 05 체크포인트 발동 입력이자 07 replay 대조 기준. */
+    fun rule(
+        tNs: Long,
+        state: String,
+        flings: Int,
+        spanMs: Long,
+        medianGapMs: Long,
+        maxGapMs: Long,
+        reason: String? = null,
+    ): String = buildString {
+        append("{\"type\":\"rule\",\"t\":").append(tNs)
+        append(",\"state\":\"").append(state)
+        append("\",\"flings\":").append(flings)
+        append(",\"spanMs\":").append(spanMs)
+        append(",\"medianGapMs\":").append(medianGapMs)
+        append(",\"maxGapMs\":").append(maxGapMs)
+        if (reason != null) append(",\"reason\":\"").append(escape(reason)).append('"')
+        append('}')
+    }
+
     const val TYPE_GYRO = "gyro"
     const val TYPE_ACCEL = "accel"
 

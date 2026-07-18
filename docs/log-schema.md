@@ -31,9 +31,17 @@
 | `foreground` | `t`, `pkg`(null = 미확인/홈) | 변화 시, 파일 열려 있는 동안 |
 | `session` | `t`, `event`(`start`/`resume`/`end`), `sessionId`, `pkg`, `reason?`, `awayMs?`, `endedAtWallMs?` | 세션 경계 |
 | `ema_probe` | **예약** — `t`, `probe`(`rule_positive`/`random`), `answer` | 기록 주체 없음. 베타 확장 빌드의 순간-EMA 타당성 프로브(ADR-0010) 자리 |
+| `scroll` | `t`, `pkg`, `dx`, `dy` (프레임워크가 delta를 못 주면 -1) | 베타 한정 AS 수집(이슈 04, ADR-0004), 세션 활성 중 |
+| `rule` | `t`, `state`(`enter`/`exit`), `flings`, `spanMs`, `medianGapMs`, `maxGapMs`, `reason?` | teacher 룰 v0 전이(이슈 04). **세션 `end`는 암묵적 룰 해제** — 세션 종료 시 exit 라인 없이 리셋된다 |
 
-이슈 04 추가 예정: `scroll`(AS 운동학 raw), `rule`(teacher 룰 enter/exit + 판정 메트릭)
 이슈 05/06 추가 예정: `checkpoint`, `n1`, `exit_verify`, `sound`
+
+## teacher 룰 v0 (이슈 04 초안 — 튜닝 변수)
+
+`TeacherRule.kt`가 단일 구현. fling = 스크롤 이벤트를 500ms debounce로 뭉친 제스처.
+최근 60s 윈도우의 fling 간격 g에 대해 — **진입**: flings ≥ 8 ∧ span ≥ 30s ∧
+median(g) ≤ 8s ∧ max(g) ≤ 20s. **해제**: 침묵 > 30s ∨ 윈도우 내 flings < 4.
+임계의 1차 튜닝은 본인 기기 self-annotation으로(이슈 04 AC).
 
 ## 샘플링 정책 (이슈 03 AC)
 

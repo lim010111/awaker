@@ -36,6 +36,20 @@
                 android:value="candidate_app_session_tracking" />
         </service>
 
+        <!-- 베타 한정 AS 스크롤 수집 (이슈 04) — 출시 빌드에선 제거 경로 (ADR-0004). -->
+        <service
+            android:name=".detection.ScrollCaptureService"
+            android:exported="false"
+            android:label="Awaker 베타 스크롤 수집"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
         <!-- 세션 로그 수동 export — 공유 시트 (이슈 03). -->
         <provider
             android:name="androidx.core.content.FileProvider"
