@@ -23,7 +23,7 @@ outside the narrative block; mechanical sections are regenerated every run._
 
 ## awaker-v1
 
-`██████░░░░░░░░░░░░░░░░` 8/28 acceptance criteria met (29%)
+`██████░░░░░░░░░░░░░░░░` 8/32 acceptance criteria met (25%)
 
 | # | Issue | Triage | Criteria | State | Blocked by |
 |---|-------|--------|----------|-------|-----------|
@@ -34,6 +34,7 @@ outside the narrative block; mechanical sections are regenerated every run._
 | 05 | 05 — 체크포인트 오버레이 + 체류 연장 + 북극성 N1 측정 | `ready-for-human` | 0/5 | ⛔ blocked | #04 |
 | 06 | 06 — 자발 종료 + 환기 사운드: face-down 검증 루프 | `ready-for-human` | 0/4 | ⛔ blocked | #05 |
 | 07 | 07 — 오프라인 replay 하네스: 로깅 스키마 AC의 집행자 | `ready-for-human` | 3/4 | 🔵 in-progress | #04 |
+| 08 | 08 — 브라우저 후보 앱 동적 확장: 설치된 브라우저 자동 탐지 | `ready-for-human` | 0/4 | ⛔ blocked | #02 |
 
 State is derived: all criteria checked → `done`; some → `in-progress`; none
 with an unfinished blocker → `blocked`; otherwise → `todo`. Issues triaged
