@@ -11,25 +11,19 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ServiceInfo
-import android.hardware.SensorManager
 import android.os.BatteryManager
 import android.os.Build
 import android.os.IBinder
 import android.os.SystemClock
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
+import com.awaker.AppGraph
 import com.awaker.core.Tunables
-import com.awaker.data.AppDatabase
 import com.awaker.data.SessionRepository
-import com.awaker.logging.JsonlFileSink
-import com.awaker.logging.LogSchema
 import com.awaker.logging.RecordingController
-import com.awaker.logging.SensorCapture
-import com.awaker.logging.TimeSource
 import com.awaker.session.EndReason
 import com.awaker.session.SessionTracker
 import com.awaker.ui.MainActivity
-import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -71,27 +65,8 @@ class TrackerService : Service() {
     override fun onCreate() {
         super.onCreate()
         foregroundSource = ForegroundAppSource(getSystemService(UsageStatsManager::class.java))
-        repository = SessionRepository(AppDatabase.get(this).sessionDao())
-
-        val appVersion = runCatching {
-            packageManager.getPackageInfo(packageName, 0).versionName
-        }.getOrNull() ?: "?"
-        recording = RecordingController(
-            time = object : TimeSource {
-                override fun wallMs() = System.currentTimeMillis()
-                override fun elapsedNs() = SystemClock.elapsedRealtimeNanos()
-            },
-            sensors = SensorCapture(getSystemService(SensorManager::class.java)),
-            sinkFactory = { sessionId, _ ->
-                JsonlFileSink(File(getExternalFilesDir(null), "logs/awaker-$sessionId.jsonl"))
-            },
-            headerFor = { sessionId, pkg, wallMs, elapsedNs ->
-                LogSchema.header(
-                    sessionId, pkg, wallMs, elapsedNs,
-                    model = Build.MODEL, sdk = Build.VERSION.SDK_INT, app = appVersion,
-                )
-            },
-        )
+        repository = AppGraph.repository
+        recording = AppGraph.recording
 
         ServiceCompat.startForeground(
             this, NOTIFICATION_ID, buildNotification(),
@@ -122,6 +97,7 @@ class TrackerService : Service() {
 
             recording.onSessionEvents(events)
             recording.onForeground(foreground, tracker.activeSessionId, now)
+            AppGraph.detection.onTick(SystemClock.elapsedRealtime(), tracker.activeSessionId != null)
             if (recording.hasOpenSinks && now - lastBatteryAt >= BATTERY_LOG_MS) {
                 lastBatteryAt = now
                 val batteryManager = getSystemService(BatteryManager::class.java)

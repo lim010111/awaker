@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 베타 한정 수집 설정 (ADR-0004): 스크롤 이벤트만, 화면 내용 조회 없음.
+     packageNames는 Tunables.DEFAULT_CANDIDATE_PACKAGES와 동기 유지할 것. -->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeViewScrolled"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:notificationTimeout="50"
+    android:packageNames="com.google.android.youtube,com.instagram.android,com.twitter.android"
+    android:canRetrieveWindowContent="false"
+    android:description="@string/accessibility_service_description" />

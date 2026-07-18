@@ -1,6 +1,7 @@
 package com.awaker.core
 
 import android.app.AppOpsManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -9,6 +10,7 @@ import android.os.PowerManager
 import android.os.Process
 import android.provider.Settings
 import androidx.core.app.NotificationManagerCompat
+import com.awaker.detection.ScrollCaptureService
 
 /** 필수 권한 상태 조회 + 부여 동선 (이슈 02 — 온보딩 폴리시 없이 동선만). */
 object Permissions {
@@ -38,6 +40,19 @@ object Permissions {
     fun requestIgnoreBatteryOptimizationsIntent(context: Context): Intent =
         Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
             .setData(Uri.parse("package:${context.packageName}"))
+
+    /** 베타 한정 AS 스크롤 수집 서비스 활성 여부 (이슈 04). */
+    fun scrollCaptureEnabled(context: Context): Boolean {
+        val enabled = Settings.Secure.getString(
+            context.contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
+        ) ?: return false
+        val self = ComponentName(context, ScrollCaptureService::class.java)
+        return enabled.split(':')
+            .mapNotNull(ComponentName::unflattenFromString)
+            .any { it == self }
+    }
+
+    fun accessibilitySettingsIntent(): Intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
 
     /** API 33+ 런타임 알림 권한 필요 여부. */
     val needsNotificationRuntimePermission: Boolean

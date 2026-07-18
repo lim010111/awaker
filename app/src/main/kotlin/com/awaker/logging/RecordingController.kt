@@ -89,6 +89,18 @@ class RecordingController(
 
     fun onScreen(on: Boolean, wallMs: Long) = writeAll(LogSchema.screen(wallToNs(wallMs), on))
 
+    /** AS 스크롤 raw — 활성 세션 파일에만 기록 (이슈 04). */
+    fun onScroll(tNs: Long, pkg: String, dx: Int, dy: Int) {
+        active?.sink?.writeLine(LogSchema.scroll(tNs, pkg, dx, dy))
+    }
+
+    /** teacher 룰 전이 — 활성 세션 파일에만 기록 (이슈 04). */
+    fun onRule(tNs: Long, state: String, metrics: com.awaker.detection.TeacherRule.Metrics, reason: String?) {
+        active?.sink?.writeLine(
+            LogSchema.rule(tNs, state, metrics.flings, metrics.spanMs, metrics.medianGapMs, metrics.maxGapMs, reason),
+        )
+    }
+
     fun onBattery(pct: Int, charging: Boolean, wallMs: Long) =
         writeAll(LogSchema.battery(wallToNs(wallMs), pct, charging))
 
