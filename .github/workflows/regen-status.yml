@@ -1,0 +1,38 @@
+name: Regen STATUS.md
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.scratch/**'
+      - 'scripts/status.py'
+
+concurrency:
+  group: regen-status-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  regen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: python3 scripts/status.py
+      - name: Commit if changed
+        run: |
+          if [ ! -f STATUS.md ]; then exit 0; fi
+          git add STATUS.md
+          # Gate on STAGED content, not `git diff --quiet`: for an UNTRACKED
+          # first STATUS.md the latter exits 0 (clean) and the board would never
+          # land on main (status-harness#05). `--cached` sees the just-staged add.
+          if ! git diff --cached --quiet STATUS.md; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "Regenerate STATUS.md"
+            git push
+          fi

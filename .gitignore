@@ -19,3 +19,10 @@ logs/
 # Temporary
 *.tmp
 *.bak
+
+# Claude Code session-local state (per-worktree; not for sharing)
+.claude/handoffs/
+.claude/worktrees/
+
+# merge-gate-local artefact cache (not committed — #30 D3)
+.merge-gate/

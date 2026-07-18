@@ -2,6 +2,9 @@
 
 Agent guidance for the Awaker repo.
 
+**Read `STATUS.md` first when starting work** — current active track, next action
+(*Start here next session*), and open decisions live there.
+
 ## Agent skills
 
 ### Issue tracker
