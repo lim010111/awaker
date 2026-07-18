@@ -6,12 +6,12 @@ outside the narrative block; mechanical sections are regenerated every run._
 <!-- narrative:start -->
 ## Current focus
 
-설계 단계 종료 → **v1 프로토타입 구현 착수 승인** (2026-07-18 grilling). 범위: E2E tracer bullet + 베타 데이터 수집 결합 빌드, 1차 코호트는 개발자 본인 기기만. 라이브 트리거는 AS teacher 룰 하나(ADR-0011), 스택은 Kotlin + Compose(ADR-0012). 활성 트랙: awaker-v1 이슈 01–07 (`.scratch/awaker-v1/issues/`).
+프로토타입 구현 → **이슈 01–07 코드 전량 main 머지 완료** (2026-07-18, PR #1–#7 — 이슈당 PR 하나). 남은 AC는 전부 **실기기 검증**(개발자 본인 기기): 각 PR 본문의 "실기기 검증 대기" 목록이 체크리스트다. 빌드/단위 테스트(Kotlin 54건 + replay pytest 18건)는 그린. 활성 트랙: awaker-v1 (`.scratch/awaker-v1/issues/`).
 
 ## Start here next session
 
-- 능동: 이슈 01(문서 위생) + 이슈 02(후보 앱 세션 감지) 착수 — 02가 뿌리 슬라이스, Android 프로젝트 스캐폴드부터.
-- 병행: 이슈 07(replay 하네스)은 04 완료 즉시 병렬 시작 — 로깅 스키마 AC의 집행자.
+- 능동: 실기기 검증 시작 — `./gradlew :app:assembleDebug` APK 설치 → 권한 4종 부여 → 이슈 02부터 순서대로 (24h 상주 + 대기 배터리 실측이 첫 관문, 결과는 이슈 코멘트에).
+- 병행: 실사용 세션 로그를 export해 `python3 -m awaker_replay.cli report`로 replay 대조 (이슈 07 AC1) — teacher 룰 임계가 안 갈리면 `TeacherRule.Config` 재조정 (이슈 04 AC3).
 
 ## Open decisions
 
