@@ -5,7 +5,9 @@ import android.content.Context
 import android.hardware.SensorManager
 import android.os.Build
 import android.os.SystemClock
+import com.awaker.checkpoint.CheckpointCoordinator
 import com.awaker.data.AppDatabase
+import com.awaker.data.CheckpointDao
 import com.awaker.data.SessionRepository
 import com.awaker.detection.DetectionPipeline
 import com.awaker.detection.TeacherRule
@@ -27,11 +29,18 @@ object AppGraph {
         private set
     lateinit var detection: DetectionPipeline
         private set
+    lateinit var checkpoint: CheckpointCoordinator
+        private set
+    lateinit var checkpointDao: CheckpointDao
+        private set
 
     fun init(app: Application) {
-        repository = SessionRepository(AppDatabase.get(app).sessionDao())
+        val db = AppDatabase.get(app)
+        repository = SessionRepository(db.sessionDao())
+        checkpointDao = db.checkpointDao()
         recording = buildRecording(app)
         detection = DetectionPipeline(TeacherRule(), recording)
+        checkpoint = CheckpointCoordinator(app, checkpointDao, recording, detection)
     }
 
     private fun buildRecording(context: Context): RecordingController {

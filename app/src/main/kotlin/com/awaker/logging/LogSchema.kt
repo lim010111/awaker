@@ -89,6 +89,26 @@ object LogSchema {
         append('}')
     }
 
+    /** 체크포인트 표시/선택 (이슈 05). event=shown|choice, choice=extend|exit. */
+    fun checkpoint(
+        tNs: Long,
+        event: String,
+        ordinal: Int,
+        heightPct: Int,
+        choice: String? = null,
+    ): String = buildString {
+        append("{\"type\":\"checkpoint\",\"t\":").append(tNs)
+        append(",\"event\":\"").append(event)
+        append("\",\"ordinal\":").append(ordinal)
+        append(",\"heightPct\":").append(heightPct)
+        if (choice != null) append(",\"choice\":\"").append(escape(choice)).append('"')
+        append('}')
+    }
+
+    /** 북극성 N1 판정 (이슈 05, ADR-0007) — 표시 후 1분 이내 후보 앱 이탈 여부. */
+    fun n1(tNs: Long, shownTNs: Long, left: Boolean): String =
+        "{\"type\":\"n1\",\"t\":$tNs,\"shownT\":$shownTNs,\"left\":$left}"
+
     const val TYPE_GYRO = "gyro"
     const val TYPE_ACCEL = "accel"
 

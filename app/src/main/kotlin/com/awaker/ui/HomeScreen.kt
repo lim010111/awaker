@@ -62,6 +62,7 @@ fun HomeScreen(repository: SessionRepository) {
     val notificationsGranted = remember(refresh) { Permissions.notificationsEnabled(context) }
     val batteryExempt = remember(refresh) { Permissions.ignoresBatteryOptimizations(context) }
     val scrollCaptureEnabled = remember(refresh) { Permissions.scrollCaptureEnabled(context) }
+    val overlayGranted = remember(refresh) { Permissions.canDrawOverlays(context) }
 
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission(),
@@ -108,6 +109,9 @@ fun HomeScreen(repository: SessionRepository) {
                     PermissionRow("접근성 — 스크롤 수집 (베타 한정)", scrollCaptureEnabled) {
                         context.startActivity(Permissions.accessibilitySettingsIntent())
                     }
+                    PermissionRow("다른 앱 위에 표시 (체크포인트)", overlayGranted) {
+                        context.startActivity(Permissions.overlaySettingsIntent(context))
+                    }
                 }
             }
         }
@@ -140,6 +144,8 @@ fun HomeScreen(repository: SessionRepository) {
                 }
             }
         }
+
+        item { N1Card() }
 
         item { LogsCard(refresh) }
 

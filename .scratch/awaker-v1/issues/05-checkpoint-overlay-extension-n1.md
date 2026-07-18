@@ -21,3 +21,15 @@ Status: ready-for-human
 ## Blocked by
 
 - 04-as-scroll-collection-teacher-rule.md — 발동 입력이 teacher 룰 전이 이벤트
+
+## Comments
+
+**2026-07-18 (agent)**: 코드 완성 — `CheckpointScheduler`(순수 상태 머신: 룰 양성
+× dwell 90s 발동, 연장 60s 스누즈 후 재표시, 가림 25%→+15%p→70% cap, 세션 종료
+리셋, N1 판정 — 단위 테스트 10건), `CheckpointTemplates`(로컬 풀 4문장 + 누적 분
+버킷/N번째 슬롯 주입, LLM 없음), `OverlayController`(TYPE_APPLICATION_OVERLAY
+바텀 시트 — 창 높이 = 가림 비율이라 시트 밖 터치는 후보 앱으로 통과),
+`CheckpointCoordinator`(오버레이/Room/로그 집행), Room v2 마이그레이션
+(checkpoint_events), `checkpoint`/`n1` 로그 타입, 인앱 N1 집계 카드 + 오버레이
+권한 행. 자발 종료 버튼은 선택 기록 + 시트 닫힘까지 (검증 루프는 이슈 06).
+AC 5개 전부 실사용 검증 대상이라 미체크 — PR "실기기 검증 대기" 참조.

@@ -97,7 +97,10 @@ class TrackerService : Service() {
 
             recording.onSessionEvents(events)
             recording.onForeground(foreground, tracker.activeSessionId, now)
-            AppGraph.detection.onTick(SystemClock.elapsedRealtime(), tracker.activeSessionId != null)
+            val sessionActive = tracker.activeSessionId != null
+            AppGraph.detection.onTick(SystemClock.elapsedRealtime(), sessionActive)
+            AppGraph.checkpoint.onSessionEvents(events)
+            AppGraph.checkpoint.onTick(SystemClock.elapsedRealtime(), now, sessionActive)
             if (recording.hasOpenSinks && now - lastBatteryAt >= BATTERY_LOG_MS) {
                 lastBatteryAt = now
                 val batteryManager = getSystemService(BatteryManager::class.java)
