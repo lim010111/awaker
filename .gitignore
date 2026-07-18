@@ -34,3 +34,9 @@ local.properties
 .kotlin/
 captures/
 *.keystore
+
+# Python (replay 하네스)
+.venv/
+__pycache__/
+.pytest_cache/
+*.egg-info/
