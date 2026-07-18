@@ -18,3 +18,14 @@ Status: ready-for-human
 ## Blocked by
 
 - 05-checkpoint-overlay-extension-n1.md — 체크포인트 선택지에서 진입
+
+## Comments
+
+**2026-07-18 (agent)**: 코드 완성 — `ExitVerifier`(순수 상태 머신: face-down z≤-7
+2초 유지 → 검증 성공 / 30초 내 미수행 → 실패·세션 유지, 정지는 15분 타이머 ∨
+face-up 30초 중 선착 — 단위 테스트 7건), `NoisePlayer`(핑크 노이즈 런타임 합성 —
+번들 에셋 없이 CONTEXT.md 풀의 노이즈 항목 충당, 풀 확장·사용자 MP3·수면 모드는
+v1 이연), `ExitFlowController`(자체 가속도 리스너 — 세션 종료 후에도 정지 판정
+지속), 검증 성공 시 세션 즉시 종료(VOLUNTARY_EXIT) + 가림 리셋. 종료된 앱이
+포그라운드를 한 번 떠나기 전 재시작하지 않도록 `SessionTracker` 억제 추가(테스트).
+`exit_verify`/`sound` 로그 타입. AC 4개 전부 실기기 검증 대상 — PR 목록 참조.

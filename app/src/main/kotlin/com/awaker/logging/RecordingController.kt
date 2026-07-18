@@ -123,6 +123,16 @@ class RecordingController(
         )
     }
 
+    /** 자발 종료 검증 결과 (이슈 06). */
+    fun onExitVerify(sessionId: String, wallMs: Long, verified: Boolean) {
+        open[sessionId]?.sink?.writeLine(LogSchema.exitVerify(wallToNs(wallMs), verified))
+    }
+
+    /** 환기 사운드 시작/정지 (이슈 06) — 파일이 이미 닫혔으면 조용히 무시. */
+    fun onSound(sessionId: String, wallMs: Long, event: String, reason: String? = null) {
+        open[sessionId]?.sink?.writeLine(LogSchema.sound(wallToNs(wallMs), event, reason))
+    }
+
     fun onBattery(pct: Int, charging: Boolean, wallMs: Long) =
         writeAll(LogSchema.battery(wallToNs(wallMs), pct, charging))
 

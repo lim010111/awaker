@@ -25,6 +25,8 @@ class CheckpointCoordinator(
     private val recording: RecordingController,
     private val detection: DetectionPipeline,
     private val scheduler: CheckpointScheduler = CheckpointScheduler(),
+    /** 자발 종료 선택 → face-down 검증 루프 진입 (이슈 06). */
+    private val onExitChosen: (sessionId: String, pkg: String) -> Unit = { _, _ -> },
 ) {
     private val overlay = OverlayController(context)
     private val main = Handler(Looper.getMainLooper())
@@ -112,6 +114,6 @@ class CheckpointCoordinator(
         }
         currentEventId?.let { id -> scope.launch { dao.setChoice(id, choice) } }
         main.post { overlay.hide() }
-        // 자발 종료의 face-down 검증 루프는 이슈 06에서 이 지점에 연결된다.
+        if (choice == "exit") session?.let { onExitChosen(it.id, it.pkg) }
     }
 }

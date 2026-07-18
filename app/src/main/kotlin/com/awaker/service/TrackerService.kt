@@ -92,7 +92,12 @@ class TrackerService : Service() {
         while (scope.isActive) {
             val now = System.currentTimeMillis()
             val foreground = if (screenOn) foregroundSource.currentForeground(now) else null
-            val events = tracker.onForeground(foreground, now)
+            // 자발 종료 검증 성공분 먼저 반영 — 같은 tick의 포그라운드 관측이
+            // 억제 로직(SessionTracker.suppressed)과 맞물린다 (이슈 06).
+            val exitEvents = AppGraph.pendingVoluntaryExit.getAndSet(null)
+                ?.let { pkg -> listOfNotNull(tracker.endNow(pkg, now, EndReason.VOLUNTARY_EXIT)) }
+                ?: emptyList()
+            val events = exitEvents + tracker.onForeground(foreground, now)
             repository.apply(events)
 
             recording.onSessionEvents(events)

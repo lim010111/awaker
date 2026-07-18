@@ -27,6 +27,10 @@ class SessionTracker(
     private val live = LinkedHashMap<String, Live>()
     private var foreground: String? = null
 
+    // 자발 종료된 앱은 포그라운드를 한 번 떠나기 전까지 새 세션을 열지 않는다
+    // (face-down 중에도 앱은 포그라운드라 즉시 재시작되는 것을 막는다 — 이슈 06).
+    private val suppressed = mutableSetOf<String>()
+
     /** 현재 포그라운드인 후보 앱 (없으면 null). */
     val activeCandidate: String?
         get() = foreground
@@ -43,6 +47,7 @@ class SessionTracker(
     fun onForeground(packageName: String?, at: Long): List<SessionEvent> {
         val events = mutableListOf<SessionEvent>()
         expireOverdue(at, events)
+        suppressed.retainAll { it == packageName } // 포그라운드를 떠난 앱은 억제 해제
 
         val candidate = packageName?.takeIf { it in candidatePackages }
 
@@ -52,7 +57,7 @@ class SessionTracker(
         }
         foreground = candidate
 
-        if (candidate != null) {
+        if (candidate != null && candidate !in suppressed) {
             val existing = live[candidate]
             when {
                 existing == null -> {
@@ -86,6 +91,7 @@ class SessionTracker(
     fun endNow(packageName: String, at: Long, reason: EndReason): SessionEvent.Ended? {
         val session = live.remove(packageName) ?: return null
         if (foreground == packageName) foreground = null
+        if (reason == EndReason.VOLUNTARY_EXIT) suppressed.add(packageName)
         return SessionEvent.Ended(session.sessionId, packageName, endedAt = at, decidedAt = at, reason = reason)
     }
 

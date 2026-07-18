@@ -37,7 +37,8 @@
 | `checkpoint` | `t`, `event`(`shown`/`choice`), `ordinal`(세션 내 0부터), `heightPct`, `choice?`(`extend`/`exit`) | 체크포인트 표시/선택 (이슈 05) |
 | `n1` | `t`, `shownT`, `left` | 북극성 N1 판정 — 표시 후 1분 이내 후보 앱 이탈 여부 (이슈 05, ADR-0007) |
 
-이슈 06 추가 예정: `exit_verify`, `sound`
+| `exit_verify` | `t`, `verified` | 자발 종료 face-down 검증 결과 (이슈 06). `verified=true` 직후 세션 `end`(reason=VOLUNTARY_EXIT)가 따른다 |
+| `sound` | `t`, `event`(`start`/`stop`), `reason?`(`timer`/`face_up`) | 환기 사운드 (이슈 06). `stop`은 세션 파일이 이미 닫혔으면 기록되지 않을 수 있다(best-effort) |
 
 ## teacher 룰 v0 (이슈 04 초안 — 튜닝 변수)
 
