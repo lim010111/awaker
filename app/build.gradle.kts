@@ -54,4 +54,6 @@ dependencies {
     ksp(libs.androidx.room.compiler)
 
     testImplementation(libs.junit)
+    // JVM 단위 테스트에서 JSONL 라인 검증용 (android.jar의 org.json은 스텁이라 별도 의존).
+    testImplementation(libs.org.json)
 }

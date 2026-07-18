@@ -137,6 +137,8 @@ fun HomeScreen(repository: SessionRepository) {
             }
         }
 
+        item { LogsCard(refresh) }
+
         item { Text("세션 이력", style = MaterialTheme.typography.titleMedium) }
 
         if (sessions.isEmpty()) {

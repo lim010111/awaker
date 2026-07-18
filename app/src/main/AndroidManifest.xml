@@ -36,6 +36,17 @@
                 android:value="candidate_app_session_tracking" />
         </service>
 
+        <!-- 세션 로그 수동 export — 공유 시트 (이슈 03). -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <!-- 재부팅 후 상주 복구 (24시간 상주 AC의 일부). -->
         <receiver
             android:name=".service.BootReceiver"

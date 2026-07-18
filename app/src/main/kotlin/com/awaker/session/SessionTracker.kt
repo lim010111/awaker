@@ -31,6 +31,10 @@ class SessionTracker(
     val activeCandidate: String?
         get() = foreground
 
+    /** 현재 포그라운드 후보 앱의 세션 id (없으면 null) — 로깅 활성화 게이트용. */
+    val activeSessionId: String?
+        get() = foreground?.let { live[it]?.sessionId }
+
     /**
      * 폴링이 관측한 현재 포그라운드 앱을 보고한다. 화면 꺼짐 등 "후보 앱 아님"은
      * null 또는 비후보 패키지로 보고하면 된다. 만료 판정도 함께 수행하므로 별도
