@@ -1,0 +1,19 @@
+[project]
+name = "awaker-replay"
+version = "0.1.0"
+description = "Awaker 오프라인 replay 하네스 — 로깅 스키마 AC의 집행자 (ADR-0011, 이슈 07)"
+requires-python = ">=3.10"
+dependencies = []
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["awaker_replay*"]
