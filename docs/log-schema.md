@@ -34,7 +34,10 @@
 | `scroll` | `t`, `pkg`, `dx`, `dy` (프레임워크가 delta를 못 주면 -1) | 베타 한정 AS 수집(이슈 04, ADR-0004), 세션 활성 중 |
 | `rule` | `t`, `state`(`enter`/`exit`), `flings`, `spanMs`, `medianGapMs`, `maxGapMs`, `reason?` | teacher 룰 v0 전이(이슈 04). **세션 `end`와 away(포그라운드 이탈)는 암묵적 룰 해제** — exit 라인 없이 리셋되므로 `enter`가 연속으로 나타날 수 있다(사이의 `foreground` 라인이 근거). replay 하네스(이슈 07)가 이 동작을 그대로 미러링한다 |
 
-이슈 05/06 추가 예정: `checkpoint`, `n1`, `exit_verify`, `sound`
+| `checkpoint` | `t`, `event`(`shown`/`choice`), `ordinal`(세션 내 0부터), `heightPct`, `choice?`(`extend`/`exit`) | 체크포인트 표시/선택 (이슈 05) |
+| `n1` | `t`, `shownT`, `left` | 북극성 N1 판정 — 표시 후 1분 이내 후보 앱 이탈 여부 (이슈 05, ADR-0007) |
+
+이슈 06 추가 예정: `exit_verify`, `sound`
 
 ## teacher 룰 v0 (이슈 04 초안 — 튜닝 변수)
 

@@ -54,6 +54,13 @@ object Permissions {
 
     fun accessibilitySettingsIntent(): Intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
 
+    /** 다른 앱 위 표시 — 체크포인트 오버레이의 전제 (이슈 05). */
+    fun canDrawOverlays(context: Context): Boolean = Settings.canDrawOverlays(context)
+
+    fun overlaySettingsIntent(context: Context): Intent =
+        Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+            .setData(Uri.parse("package:${context.packageName}"))
+
     /** API 33+ 런타임 알림 권한 필요 여부. */
     val needsNotificationRuntimePermission: Boolean
         get() = Build.VERSION.SDK_INT >= 33

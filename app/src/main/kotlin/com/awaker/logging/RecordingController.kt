@@ -24,7 +24,8 @@ class RecordingController(
 
     private class Open(val sessionId: String, val pkg: String, val sink: SessionLogSink)
 
-    private val open = LinkedHashMap<String, Open>()
+    // 폴링 스레드가 넣고 빼지만, 체크포인트 선택(메인 스레드)도 조회한다.
+    private val open = java.util.concurrent.ConcurrentHashMap<String, Open>()
 
     @Volatile
     private var active: Open? = null
@@ -98,6 +99,27 @@ class RecordingController(
     fun onRule(tNs: Long, state: String, metrics: com.awaker.detection.TeacherRule.Metrics, reason: String?) {
         active?.sink?.writeLine(
             LogSchema.rule(tNs, state, metrics.flings, metrics.spanMs, metrics.medianGapMs, metrics.maxGapMs, reason),
+        )
+    }
+
+    /** 체크포인트 표시/선택 — 해당 세션 파일에 기록 (이슈 05). */
+    fun onCheckpoint(
+        sessionId: String,
+        wallMs: Long,
+        event: String,
+        ordinal: Int,
+        heightPct: Int,
+        choice: String? = null,
+    ) {
+        open[sessionId]?.sink?.writeLine(
+            LogSchema.checkpoint(wallToNs(wallMs), event, ordinal, heightPct, choice),
+        )
+    }
+
+    /** 북극성 N1 판정 — away 유예 중에도 파일이 열려 있어 기록 가능 (이슈 05). */
+    fun onN1(sessionId: String, wallMs: Long, shownAtElapsedMs: Long, left: Boolean) {
+        open[sessionId]?.sink?.writeLine(
+            LogSchema.n1(wallToNs(wallMs), shownAtElapsedMs * 1_000_000, left),
         )
     }
 
