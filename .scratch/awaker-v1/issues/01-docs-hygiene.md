@@ -11,10 +11,15 @@ Status: ready-for-agent
 
 ## Acceptance criteria
 
-- [ ] `project_overview.md` 상단에 "역사 문서 — 강제 개입 시나리오는 폐기됨, 현행은 CONTEXT.md + docs/adr/" 취지의 경고 블록이 있다
-- [ ] `.query.md`가 삭제됐다
-- [ ] CONTEXT.md·ADR 본문은 수정하지 않았다 (이 이슈는 낡은 산출물만 건드림)
+- [x] `project_overview.md` 상단에 "역사 문서 — 강제 개입 시나리오는 폐기됨, 현행은 CONTEXT.md + docs/adr/" 취지의 경고 블록이 있다
+- [x] `.query.md`가 삭제됐다
+- [x] CONTEXT.md·ADR 본문은 수정하지 않았다 (이 이슈는 낡은 산출물만 건드림)
 
 ## Blocked by
 
 None - can start immediately
+
+## Comments
+
+**2026-07-18 (agent)**: 구현 완료 — `project_overview.md` 상단 경고 블록 추가,
+`.query.md` 삭제. CONTEXT.md·ADR은 건드리지 않음 (diff로 확인 가능).

@@ -23,11 +23,11 @@ outside the narrative block; mechanical sections are regenerated every run._
 
 ## awaker-v1
 
-`░░░░░░░░░░░░░░░░░░░░░░` 0/28 acceptance criteria met (0%)
+`██░░░░░░░░░░░░░░░░░░░░` 3/28 acceptance criteria met (11%)
 
 | # | Issue | Triage | Criteria | State | Blocked by |
 |---|-------|--------|----------|-------|-----------|
-| 01 | 01 — 문서 위생 정리: 낡은 기획 산출물의 오염원 제거 | `ready-for-agent` | 0/3 | ⬜ todo | — |
+| 01 | 01 — 문서 위생 정리: 낡은 기획 산출물의 오염원 제거 | `ready-for-agent` | 3/3 | ✅ done | — |
 | 02 | 02 — 후보 앱 세션 감지: 포그라운드 서비스 + 세션 상태 머신 | `ready-for-human` | 0/4 | ⬜ todo | — |
 | 03 | 03 — 센서 raw 로깅 + 수동 export: replay 가능한 공통 타임라인 | `ready-for-human` | 0/4 | ⛔ blocked | #02 |
 | 04 | 04 — AS 스크롤 운동학 수집 + teacher 룰 v0 | `ready-for-human` | 0/4 | ⛔ blocked | #03 |
