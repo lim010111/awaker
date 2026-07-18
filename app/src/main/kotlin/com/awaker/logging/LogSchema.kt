@@ -109,6 +109,15 @@ object LogSchema {
     fun n1(tNs: Long, shownTNs: Long, left: Boolean): String =
         "{\"type\":\"n1\",\"t\":$tNs,\"shownT\":$shownTNs,\"left\":$left}"
 
+    /** 자발 종료 face-down 검증 결과 (이슈 06). */
+    fun exitVerify(tNs: Long, verified: Boolean): String =
+        "{\"type\":\"exit_verify\",\"t\":$tNs,\"verified\":$verified}"
+
+    /** 환기 사운드 시작/정지 (이슈 06). event=start|stop, reason=timer|face_up. */
+    fun sound(tNs: Long, event: String, reason: String? = null): String =
+        if (reason == null) "{\"type\":\"sound\",\"t\":$tNs,\"event\":\"$event\"}"
+        else "{\"type\":\"sound\",\"t\":$tNs,\"event\":\"$event\",\"reason\":\"${escape(reason)}\"}"
+
     const val TYPE_GYRO = "gyro"
     const val TYPE_ACCEL = "accel"
 

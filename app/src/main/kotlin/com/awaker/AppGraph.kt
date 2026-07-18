@@ -11,6 +11,8 @@ import com.awaker.data.CheckpointDao
 import com.awaker.data.SessionRepository
 import com.awaker.detection.DetectionPipeline
 import com.awaker.detection.TeacherRule
+import com.awaker.exit.ExitFlowController
+import java.util.concurrent.atomic.AtomicReference
 import com.awaker.logging.JsonlFileSink
 import com.awaker.logging.LogSchema
 import com.awaker.logging.RecordingController
@@ -33,6 +35,11 @@ object AppGraph {
         private set
     lateinit var checkpointDao: CheckpointDao
         private set
+    lateinit var exitFlow: ExitFlowController
+        private set
+
+    /** 자발 종료 검증 성공 → 폴링 루프가 다음 tick에 세션을 즉시 종료한다 (이슈 06). */
+    val pendingVoluntaryExit = AtomicReference<String?>(null)
 
     fun init(app: Application) {
         val db = AppDatabase.get(app)
@@ -40,7 +47,15 @@ object AppGraph {
         checkpointDao = db.checkpointDao()
         recording = buildRecording(app)
         detection = DetectionPipeline(TeacherRule(), recording)
-        checkpoint = CheckpointCoordinator(app, checkpointDao, recording, detection)
+        exitFlow = ExitFlowController(
+            sensorManager = app.getSystemService(SensorManager::class.java),
+            recording = recording,
+            requestSessionEnd = { pkg -> pendingVoluntaryExit.set(pkg) },
+        )
+        checkpoint = CheckpointCoordinator(
+            app, checkpointDao, recording, detection,
+            onExitChosen = { sessionId, pkg -> exitFlow.begin(sessionId, pkg) },
+        )
     }
 
     private fun buildRecording(context: Context): RecordingController {

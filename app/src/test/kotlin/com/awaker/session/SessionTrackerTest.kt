@@ -123,9 +123,26 @@ class SessionTrackerTest {
         val ended = t.endNow(youtube, at = 42_000, reason = EndReason.VOLUNTARY_EXIT)
         assertEquals(EndReason.VOLUNTARY_EXIT, ended?.reason)
         assertEquals(42_000L, ended?.endedAt)
-        // 이후 재진입은 새 세션.
+        // 포그라운드를 한 번 떠난 뒤의 재진입은 새 세션 (자발 종료 억제 — 이슈 06).
+        t.onForeground(null, at = 45_000)
         val events = t.onForeground(youtube, at = 50_000)
         assertEquals(listOf<SessionEvent>(SessionEvent.Started("s1", youtube, 50_000)), events)
+    }
+
+    @Test
+    fun `voluntary exit suppresses restart until the app leaves foreground once`() {
+        val t = tracker()
+        t.onForeground(youtube, at = 0)
+        t.endNow(youtube, at = 10_000, reason = EndReason.VOLUNTARY_EXIT)
+        // face-down 중에도 앱은 여전히 포그라운드 — 새 세션이 열리면 안 된다
+        assertTrue(t.onForeground(youtube, at = 15_000).isEmpty())
+        assertTrue(t.onForeground(youtube, at = 20_000).isEmpty())
+        // 포그라운드를 한 번 떠나면 억제 해제 — 다음 진입은 새 세션
+        t.onForeground(null, at = 25_000)
+        assertEquals(
+            listOf<SessionEvent>(SessionEvent.Started("s1", youtube, 30_000)),
+            t.onForeground(youtube, at = 30_000),
+        )
     }
 
     @Test
