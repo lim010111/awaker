@@ -6,12 +6,12 @@ outside the narrative block; mechanical sections are regenerated every run._
 <!-- narrative:start -->
 ## Current focus
 
-프로토타입 구현 → **이슈 01–07 코드 전량 main 머지 완료** (2026-07-18, PR #1–#7 — 이슈당 PR 하나). 남은 AC는 전부 **실기기 검증**(개발자 본인 기기): 각 PR 본문의 "실기기 검증 대기" 목록이 체크리스트다. 빌드/단위 테스트(Kotlin 54건 + replay pytest 18건)는 그린. 활성 트랙: awaker-v1 (`.scratch/awaker-v1/issues/`).
+**실기기 검증 진행 중** (2026-07-18 저녁 개시). 이슈 01–08 코드 전량 main 머지 완료 (PR #1–#8 — 이슈당 PR 하나). S21+(SM-G996N)에 APK 설치·권한 5종 부여·서비스 기동 완료, 스모크 테스트(YouTube 세션 감지 → 로그 생성 → replay 파싱) 통과 — **24h 상주 시계가 도는 중**. 이슈 08(브라우저 후보 앱 동적 확장)은 머지됐으나 기기에는 미설치: 24h 체크포인트를 깨지 않기 위해 다음 재설치 때 반영. 빌드/단위 테스트(Kotlin 54건 + replay pytest 18건) 그린. 활성 트랙: awaker-v1 (`.scratch/awaker-v1/issues/`).
 
 ## Start here next session
 
-- 능동: 실기기 검증 시작 — `./gradlew :app:assembleDebug` APK 설치 → 권한 4종 부여 → 이슈 02부터 순서대로 (24h 상주 + 대기 배터리 실측이 첫 관문, 결과는 이슈 코멘트에).
-- 병행: 실사용 세션 로그를 export해 `python3 -m awaker_replay.cli report`로 replay 대조 (이슈 07 AC1) — teacher 룰 임계가 안 갈리면 `TeacherRule.Config` 재조정 (이슈 04 AC3).
+- 능동: 24h 체크포인트 (2026-07-19 저녁) — 서비스 생존·배터리 실측 확인 → 이슈 02 코멘트에 기록 → 이슈 08 포함 신규 APK 재설치 (usbipd attach → `adb install -r`).
+- 병행: 실사용 세션 로그 pull/export → `python3 -m awaker_replay.cli report`로 replay 대조 (이슈 07 AC1) — teacher 룰 임계가 안 갈리면 `TeacherRule.Config` 재조정 (이슈 04 AC3). 브라우저 정독 세션 오탐 체감은 이슈 08 코멘트에.
 
 ## Open decisions
 
