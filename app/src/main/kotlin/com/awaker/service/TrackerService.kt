@@ -18,6 +18,7 @@ import android.os.SystemClock
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import com.awaker.AppGraph
+import com.awaker.core.CandidateApps
 import com.awaker.core.Tunables
 import com.awaker.data.SessionRepository
 import com.awaker.logging.RecordingController
@@ -43,7 +44,8 @@ import kotlinx.coroutines.runBlocking
 class TrackerService : Service() {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    private val tracker = SessionTracker()
+    // 후보 셋은 서비스 시작 시 해석 — 기본 피드 앱 + 설치된 브라우저 (이슈 08).
+    private lateinit var tracker: SessionTracker
     private lateinit var foregroundSource: ForegroundAppSource
     private lateinit var repository: SessionRepository
     private lateinit var recording: RecordingController
@@ -64,6 +66,7 @@ class TrackerService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        tracker = SessionTracker(candidatePackages = CandidateApps.resolve(packageManager))
         foregroundSource = ForegroundAppSource(getSystemService(UsageStatsManager::class.java))
         repository = AppGraph.repository
         recording = AppGraph.recording

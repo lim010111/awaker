@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 베타 한정 수집 설정 (ADR-0004): 스크롤 이벤트만, 화면 내용 조회 없음.
-     packageNames는 Tunables.DEFAULT_CANDIDATE_PACKAGES와 동기 유지할 것. -->
+     packageNames는 폴백 — ScrollCaptureService.onServiceConnected가
+     CandidateApps.resolve(기본 셋 + 설치된 브라우저)로 런타임 갱신 (이슈 08). -->
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
     android:accessibilityEventTypes="typeViewScrolled"
     android:accessibilityFeedbackType="feedbackGeneric"

@@ -14,6 +14,15 @@
     <!-- 체크포인트 바텀 시트 — 다른 앱 위 오버레이 (이슈 05, ADR-0012). -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
+    <!-- 설치된 브라우저 탐지 — 후보 앱 동적 확장 (이슈 08, Android 11+ 패키지 가시성). -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
+
     <application
         android:name=".AwakerApp"
         android:label="Awaker"

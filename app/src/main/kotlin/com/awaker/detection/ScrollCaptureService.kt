@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityService
 import android.os.SystemClock
 import android.view.accessibility.AccessibilityEvent
 import com.awaker.AppGraph
+import com.awaker.core.CandidateApps
 
 /**
  * 베타 한정 AS 스크롤 운동학 수집기 (이슈 04). 후보 앱의 TYPE_VIEW_SCROLLED만
@@ -12,6 +13,13 @@ import com.awaker.AppGraph
  * (ADR-0004 약속; 판별 입력 X는 권한-경량 센서뿐, 터치/스크롤은 GT 전용 — ADR-0010).
  */
 class ScrollCaptureService : AccessibilityService() {
+
+    override fun onServiceConnected() {
+        // 정적 XML의 packageNames는 폴백 — 설치된 브라우저까지 런타임 확장 (이슈 08).
+        serviceInfo = serviceInfo.apply {
+            packageNames = CandidateApps.resolve(packageManager).toTypedArray()
+        }
+    }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
         if (event.eventType != AccessibilityEvent.TYPE_VIEW_SCROLLED) return
