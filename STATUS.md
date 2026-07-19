@@ -6,15 +6,17 @@ outside the narrative block; mechanical sections are regenerated every run._
 <!-- narrative:start -->
 ## Current focus
 
-**실기기 검증 진행 중** (2026-07-18 저녁 개시). 이슈 01–08 코드 전량 main 머지 완료 (PR #1–#8 — 이슈당 PR 하나). S21+(SM-G996N)에 APK 설치·권한 5종 부여·서비스 기동 완료, 스모크 테스트(YouTube 세션 감지 → 로그 생성 → replay 파싱) 통과 — **24h 상주 시계가 도는 중**. 이슈 08(브라우저 후보 앱 동적 확장)은 머지됐으나 기기에는 미설치: 24h 체크포인트를 깨지 않기 위해 다음 재설치 때 반영. 빌드/단위 테스트(Kotlin 54건 + replay pytest 18건) 그린. 활성 트랙: awaker-v1 (`.scratch/awaker-v1/issues/`).
+**실기기 1일차 검증 완료** (2026-07-19 저녁 체크포인트). 신규 APK(ce39a4d, 이슈 08 포함)로 하루 실사용: 서비스 18h51m 무중단(lastStartId=1), 배터리 11.4mAh/일(전체 소모의 0.3%), 실사용 세션 31개, 체크포인트 19회 노출(연장 17/종료 2), 가림 cap 70% 도달, **북극성 N1 첫 실측 42%** (목표 50%+). 브라우저 확장(이슈 08) 실증 — 삼성브라우저beta·Chrome에서 룰 발화·체크포인트 정상. **중대 발견 2건**: ① YouTube가 AS 스크롤 이벤트를 방출하지 않아 teacher 룰이 구조적으로 침묵 (이슈 09, 통제 실험으로 확정), ② 세션 인터리브 시 파일 단위 replay 재현 불가 — 전역 룰 상태 vs 세션별 로그 분할 (이슈 10, 3건 대조 중 2건 불일치의 원인). 활성 트랙: awaker-v1 (`.scratch/awaker-v1/issues/`).
 
 ## Start here next session
 
-- 능동: 24h 체크포인트 (2026-07-19 저녁) — 서비스 생존·배터리 실측 확인 → 이슈 02 코멘트에 기록 → 이슈 08 포함 신규 APK 재설치 (usbipd attach → `adb install -r`).
-- 병행: 실사용 세션 로그 pull/export → `python3 -m awaker_replay.cli report`로 replay 대조 (이슈 07 AC1) — teacher 룰 임계가 안 갈리면 `TeacherRule.Config` 재조정 (이슈 04 AC3). 브라우저 정독 세션 오탐 체감은 이슈 08 코멘트에.
+- 능동: 이슈 09(YouTube 공백)·10(replay 파리티) 방향 그릴 — 각 이슈 파일의 Options 참조. 09는 GT 경로(ADR-0010)까지 걸린 결정, 10은 옵션 1(포그라운드 전환 시 룰 리셋)이 최소 변경 후보.
+- 병행: 24h 생존 확정(다음 연결 때 createTime 확인 → 이슈 02 AC3), 브라우저 정독 오탐 체감 수집(이슈 08 AC4), 자발 종료+face-down 시나리오 실행(이슈 06 사운드 경로), 체크포인트 메시지 슬롯 실물 확인(이슈 05 AC2).
 
 ## Open decisions
 
+- 이슈 09 — YouTube 탐지 공백 대응: AS eventTypes 확장 탐사 vs 센서 단독 일반화 vs 병행. 재설치(24h 시계 리셋) 수반 여부 포함.
+- 이슈 10 — replay 파리티 복구: 룰 리셋 vs 브로드캐스트 기록 vs 단일 로그 재설계 (ADR-0011 AC 직결).
 - G2 오탐 신고 UI의 자리 — 체크포인트 "선택지 2개" 철학(CONTEXT.md)과 ADR-0007 신고 가드레일의 긴장. v1 출시 전 grill 필요 (프로토타입 비차단).
 - ADR-0009 (자체 백엔드: 인증/로깅/호스팅) — 출시 전 별도 grill. ADR-0008 출시 전 체크리스트 4항목도 동반.
 - 베타 확장 빌드 범위 (동의 플로우·로그 업로드·EMA 프로브 UI) — 1차 코호트 데이터를 보고 결정.
@@ -23,18 +25,20 @@ outside the narrative block; mechanical sections are regenerated every run._
 
 ## awaker-v1
 
-`██████░░░░░░░░░░░░░░░░` 8/32 acceptance criteria met (25%)
+`████████████████░░░░░░` 23/32 acceptance criteria met (72%)
 
 | # | Issue | Triage | Criteria | State | Blocked by |
 |---|-------|--------|----------|-------|-----------|
 | 01 | 01 — 문서 위생 정리: 낡은 기획 산출물의 오염원 제거 | `ready-for-agent` | 3/3 | ✅ done | — |
-| 02 | 02 — 후보 앱 세션 감지: 포그라운드 서비스 + 세션 상태 머신 | `ready-for-human` | 0/4 | ⬜ todo | — |
-| 03 | 03 — 센서 raw 로깅 + 수동 export: replay 가능한 공통 타임라인 | `ready-for-human` | 1/4 | 🔵 in-progress | #02 |
-| 04 | 04 — AS 스크롤 운동학 수집 + teacher 룰 v0 | `ready-for-human` | 1/4 | 🔵 in-progress | #03 |
-| 05 | 05 — 체크포인트 오버레이 + 체류 연장 + 북극성 N1 측정 | `ready-for-human` | 0/5 | ⛔ blocked | #04 |
-| 06 | 06 — 자발 종료 + 환기 사운드: face-down 검증 루프 | `ready-for-human` | 0/4 | ⛔ blocked | #05 |
-| 07 | 07 — 오프라인 replay 하네스: 로깅 스키마 AC의 집행자 | `ready-for-human` | 3/4 | 🔵 in-progress | #04 |
-| 08 | 08 — 브라우저 후보 앱 동적 확장: 설치된 브라우저 자동 탐지 | `ready-for-human` | 0/4 | ⛔ blocked | #02 |
+| 02 | 02 — 후보 앱 세션 감지: 포그라운드 서비스 + 세션 상태 머신 | `ready-for-human` | 3/4 | 🔵 in-progress | — |
+| 03 | 03 — 센서 raw 로깅 + 수동 export: replay 가능한 공통 타임라인 | `ready-for-human` | 4/4 | ✅ done | #02 |
+| 04 | 04 — AS 스크롤 운동학 수집 + teacher 룰 v0 | `ready-for-human` | 3/4 | 🔵 in-progress | #03 |
+| 05 | 05 — 체크포인트 오버레이 + 체류 연장 + 북극성 N1 측정 | `ready-for-human` | 4/5 | 🔵 in-progress | #04 |
+| 06 | 06 — 자발 종료 + 환기 사운드: face-down 검증 루프 | `ready-for-human` | 1/4 | 🔵 in-progress | #05 |
+| 07 | 07 — 오프라인 replay 하네스: 로깅 스키마 AC의 집행자 | `ready-for-human` | 4/4 | ✅ done | #04 |
+| 08 | 08 — 브라우저 후보 앱 동적 확장: 설치된 브라우저 자동 탐지 | `ready-for-human` | 1/4 | 🔵 in-progress | #02 |
+| 09 | 09 — YouTube AS-scroll 공백: 대표 무지성 표면이 teacher 룰 사각지대 | `needs-triage` | 0/0 | ❔ unknown | — |
+| 10 | 10 — 세션 인터리브 시 replay 재현성 붕괴: 전역 룰 상태 vs 세션별 로그 파일 | `needs-triage` | 0/0 | ❔ unknown | — |
 
 State is derived: all criteria checked → `done`; some → `in-progress`; none
 with an unfinished blocker → `blocked`; otherwise → `todo`. Issues triaged

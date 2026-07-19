@@ -10,8 +10,8 @@ Status: ready-for-human
 
 ## Acceptance criteria
 
-- [ ] AS 스크롤 이벤트가 센서 로그와 공통 타임라인에 정렬 기록된다
-- [ ] teacher 룰 v0의 양성 진입/해제 전이가 이벤트로 기록된다
+- [x] AS 스크롤 이벤트가 센서 로그와 공통 타임라인에 정렬 기록된다
+- [x] teacher 룰 v0의 양성 진입/해제 전이가 이벤트로 기록된다
 - [ ] 의도적 무지성 스크롤 흉내와 정독 스크롤에서 룰 판정이 갈리는 것을 self-annotation으로 확인했다
 - [x] 확정한 룰 수식/임계 초안이 ADR-0011 갱신 또는 본 이슈 코멘트로 기록됐다
 
@@ -34,3 +34,15 @@ Status: ready-for-human
 임계는 전부 `TeacherRule.Config` 기본값 — self-annotation(AC3) 후 재조정 대상.
 AS 수집은 스크롤 이벤트만(canRetrieveWindowContent=false), 화면 내용 미조회.
 AC 1·2(실기기 기록)와 AC 3(self-annotation)은 PR "실기기 검증 대기" 참조.
+
+**2026-07-19 (agent)**: 실기기 1일차 — scroll 3,753라인이 센서와 공통 타임라인에
+정렬 기록(replay 파싱 정상, AC1 체크). 룰 전이 enter 18 / exit 2(silence) 기록
+(AC2 체크). 앱별 enter: 삼성브라우저beta 9, Instagram 7, Chrome 2, **YouTube 0**.
+
+**발견(중대) — YouTube AS-scroll 공백**: YouTube는 `TYPE_VIEW_SCROLLED`를
+사실상 방출하지 않는다. 실사용 9세션 104분에 scroll 3건(전부 dy=0, dx=±1).
+통제 실험: 홈피드 실플링 8회 + Shorts 스와이프 6회 → **0건**, 동일 방식
+Chrome 5플링 → 20건. teacher 룰이 YouTube에서 구조적으로 침묵 — 유저 1일 체감
+("유튜브에선 안 떴다")과 일치. 대응 결정은 이슈 09로 분리. AC3(판정 갈림
+self-annotation)는 브라우저·인스타 실사용 발화로 부분 실증 — 정독 대조 체감
+수집 계속 (이슈 08 AC4와 공동).
