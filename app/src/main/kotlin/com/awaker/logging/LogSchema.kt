@@ -69,6 +69,14 @@ object LogSchema {
     fun scroll(tNs: Long, pkg: String, dx: Int, dy: Int): String =
         "{\"type\":\"scroll\",\"t\":$tNs,\"pkg\":\"${escape(pkg)}\",\"dx\":$dx,\"dy\":$dy}"
 
+    /**
+     * AS 이벤트 타입 탐사 (이슈 09 갈래 A, 진단용 임시) — 메타데이터만: 타입명·
+     * 패키지·시각. 화면 내용 미조회 원칙 불변 (ADR-0004). 타입별 rate cap은
+     * AsEventProbe.
+     */
+    fun asEvent(tNs: Long, pkg: String, eventType: String): String =
+        "{\"type\":\"as_event\",\"t\":$tNs,\"pkg\":\"${escape(pkg)}\",\"et\":\"${escape(eventType)}\"}"
+
     /** teacher 룰 전이 (이슈 04) — 05 체크포인트 발동 입력이자 07 replay 대조 기준. */
     fun rule(
         tNs: Long,

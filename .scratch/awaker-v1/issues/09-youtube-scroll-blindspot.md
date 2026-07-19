@@ -65,6 +65,18 @@ APK·기기 비용 0이라 병행의 추가 비용이 사실상 없다. 옵션 3
 
 ## Comments
 
+**2026-07-19 (agent, 갈래 A 구현)**: 탐사 코드 완료 (PR
+`issue/09-as-eventtypes-probe`). 수신 타입을 `typeViewScrolled` +
+`typeWindowContentChanged`·`typeWindowStateChanged`·`typeViewSelected`로 확장
+— 텍스트를 담는 타입(typeViewTextChanged 등)은 수신 자체를 배제해 최소 수집
+유지. 새 레코드 `as_event`(`t`·`pkg`·`et` 타입명 — 메타데이터만,
+`canRetrieveWindowContent=false` 불변), 타입·패키지당 200ms rate cap
+(`AsEventProbe`, 순수 Kotlin + 단위 테스트 5개). 접근성 고지 문구 동반 갱신
+("스크롤·화면 갱신 등 이벤트 발생 사실(종류·시각)만 기록"). replay 파서는
+unknown 타입 무시(전방 호환)라 무변경. 판정은 실기기: YouTube 홈피드·Shorts
+사용 중 `as_event`에 스크롤 상관 이벤트가 찍히는가 — "아무것도 안 찍힘"도
+유효한 결과(AS 경로 불가 증거로 갈래 닫음).
+
 **2026-07-19 (agent, grill)**: 유저와 방향 그릴 완료 — 병행 확정. 갈래 A는
 이 이슈의 PR로 APK에, 갈래 B는 오프라인 백테스트로 이 이슈 코멘트에.
 구현은 별도 세션에서 진행. 설치 순서(구 APK 24h 증거 회수 → 통합 APK 설치
