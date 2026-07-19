@@ -1,6 +1,6 @@
 # 10 — 세션 인터리브 시 replay 재현성 붕괴: 전역 룰 상태 vs 세션별 로그 파일
 
-Status: needs-triage
+Status: ready-for-agent
 
 ## Problem
 
@@ -19,17 +19,47 @@ Status: needs-triage
 디바이스 없이 판별 재현" AC가 깨진다. 1일차 대조: 3건 중 2건 불일치
 (이슈 07 2026-07-19 코멘트 — Chrome 기기-만 enter 1, Instagram replay-만 enter 3).
 
-## Options (결정 필요)
+## Decision (2026-07-19 grill — ADR-0014)
 
-1. **포그라운드 앱 전환 시 룰 리셋** — 앱별 fling 순수성. 로그 파일과 룰 입력의
-   경계가 일치하게 되어 replay 재현 성립. ADR-0013 부류별 임계 방향과도 정합.
-   트레이드오프: 앱을 오가며 이어지는 무지성 에피소드를 놓침 (5분 유예 취지와
-   긴장 — 단 v0 GT 목적엔 순수성이 더 값짐).
-2. **scroll/rule 라인을 열린 모든 세션 파일에 브로드캐스트** — replay가 전량을
-   보게 됨(현행 screen/battery/foreground와 동일한 writeAll 정책). 트레이드오프:
-   중복 기록·용량, replay가 pkg 필터를 갖춰야 함. 전역 룰 의미는 유지.
-3. **기기-일 단위 단일 로그로 재설계** — 세션은 마커로 강등. 가장 깨끗하지만
-   파일 수명·export 단위·스키마가 다 바뀌는 ADR급 변경.
+**옵션 1 확정 + 경계 통일**: 세션-스코프 상태 전부를 "활성 세션 변경"(폴링
+tick 기준, null 포함) 단일 경계에서 리셋·재겨냥한다. 근거·트레이드오프·비채택
+옵션은 ADR-0014. 그릴에서 코드로 확정한 사실:
+
+- 기기 룰은 이미 후보→비후보에서 리셋된다(`sessionActive` =
+  `tracker.activeSessionId != null`, TrackerService). 남은 격차는
+  **후보→후보 직행 전환** 하나.
+- replay는 처음부터 이 의미론(`replay.py` — 파일 앱이 포그라운드 아니면
+  리셋)이므로 **replay 코드는 무변경**.
+- 체크포인트 오귀속은 별도 버그: `CheckpointCoordinator`가 `Resumed -> Unit`
+  — 겨냥이 "마지막 Started 세션"에 고정.
+- 시트·가림 카운터도 룰과 같은 사각지대(`CheckpointScheduler`는
+  `!sessionActive`에서만 Dismiss·리셋).
+
+## 구현 범위 (이슈당 PR 1개 규약)
+
+1. **룰 리셋 경계 확장** — `DetectionPipeline`이 직전 활성 세션 id를 기억,
+   달라지면(null 포함) `rule.reset`. 리셋은 현행대로 무음(로그 라인 없음 —
+   replay가 foreground 라인으로 동일 경계를 유도).
+2. **체크포인트·N1 재겨냥** — `CheckpointCoordinator`가 열린 세션
+   `Map<sessionId, Session>`을 유지: Started 추가+겨냥, Resumed 조회+겨냥
+   (원래 `startWallMs` 보존 — "N분째" 메시지가 세션 시작 기준 유지), Ended
+   제거+해제.
+3. **시트·가림 리셋 경계 확장** — 활성 세션이 *바뀌면*(다른 후보로의 전환
+   포함) 표시 중 시트 Dismiss + extensionCount 리셋. 후보→비후보의 기존
+   동작은 불변.
+4. **N1 예외 유지** — `pendingN1ShownAt`은 위 리셋에서 제외 (후보 앱 전체
+   이탈 기준, ADR-0007 정의 그대로).
+
+## 검증 계획
+
+- **단위 테스트**: 리셋 경계(후보→후보 직행/런처 경유/복귀), 재겨냥(Resumed
+  후 shown·choice·N1이 새 활성 세션에 기록), 시트 Dismiss·ordinal 리셋,
+  N1 예외. 기존 테스트 갱신 포함.
+- **파리티 재검증(합격 기준)**: 새 APK 설치 직후 adb 스크립트로 1일차 불일치
+  패턴 재현 — Chrome↔YouTube↔sbrowser 직행 전환 + 각 앱 스와이프로 인터리브
+  세션 3개 생성 → 로그 회수 → 파일별 replay 대조 **전 세션 일치**.
+- **도구 회귀**: 1일차 일치 건(`awaker-3e2e888c…`)이 여전히 일치하는지 재확인.
+- **보조망**: 이후 측정 기간의 실사용 로그로 재대조 (예상 밖 패턴 탐지).
 
 ## Evidence
 
@@ -49,4 +79,12 @@ Status: needs-triage
 
 ## Blocked by
 
-- 없음 — 방향 결정 필요 (옵션 1이 최소 변경 + ADR-0013 정합 후보).
+- 없음 — 방향 확정 완료, 구현 대기.
+
+## Comments
+
+**2026-07-19 (agent, grill)**: 유저와 방향 그릴 완료 — 옵션 1 확정 + 세션-스코프
+상태 단일 경계 통일(ADR-0014 기록, CONTEXT.md에 [[활성 세션]] 용어 추가).
+유저 결정: "일관적이게 하나의 앱을 단위로." 구현·검증 범위는 본문 갱신.
+구현은 별도 세션에서 진행 — 재설치는 이슈 09 탐사와 통합 APK로 1회
+(순서: 구 APK 24h 증거 회수 → 설치 → adb 파리티 검증, 이슈 02 코멘트 참조).
