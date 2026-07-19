@@ -40,6 +40,12 @@ class CheckpointCoordinator(
 
     private var lastShow: CheckpointScheduler.Effect.Show? = null
 
+    // 시트가 보인 시점의 겨냥 세션 — choice/exit는 여기에 귀속한다. 경계 Dismiss가
+    // 화면에 반영되기 전 탭이 들어와도 새 활성 세션으로 새지 않게 (N1은 예외적으로
+    // 활성 세션을 따른다, 이슈 10 본문).
+    @Volatile
+    private var shownSession: SessionAim.Session? = null
+
     /** TrackerService 폴링 루프가 세션 경계를 알려준다. */
     fun onSessionEvents(events: List<SessionEvent>) = aim.onSessionEvents(events)
 
@@ -58,6 +64,7 @@ class CheckpointCoordinator(
     private fun handleShow(effect: CheckpointScheduler.Effect.Show, wallMs: Long) {
         val current = aim.current ?: return
         lastShow = effect
+        shownSession = current
         val elapsedMinutes = (wallMs - current.startWallMs) / 60_000
         val message = CheckpointTemplates.render(elapsedMinutes, effect.ordinal)
         val heightPct = (effect.heightFraction * 100).toInt()
@@ -96,7 +103,7 @@ class CheckpointCoordinator(
             if (choice == "extend") scheduler.onExtend(now) else scheduler.onExitChosen(now)
         }
         val show = lastShow
-        aim.current?.let {
+        shownSession?.let {
             recording.onCheckpoint(
                 it.id, wallMs, "choice",
                 ordinal = show?.ordinal ?: 0,
@@ -106,6 +113,6 @@ class CheckpointCoordinator(
         }
         currentEventId?.let { id -> scope.launch { dao.setChoice(id, choice) } }
         main.post { overlay.hide() }
-        if (choice == "exit") aim.current?.let { onExitChosen(it.id, it.pkg) }
+        if (choice == "exit") shownSession?.let { onExitChosen(it.id, it.pkg) }
     }
 }
