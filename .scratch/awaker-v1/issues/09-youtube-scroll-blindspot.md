@@ -65,6 +65,37 @@ APK·기기 비용 0이라 병행의 추가 비용이 사실상 없다. 옵션 3
 
 ## Comments
 
+**2026-07-19 (agent, 갈래 B 백테스트)**: `gyro_heuristic.py`(v0 상수 그대로)를
+1일차 로그 31개 전수로 오프라인 실행. GT는 세션 파일별 replay 전이로 산출
+(10s 윈도우, 이슈 07 하네스 재사용).
+
+- **채점 하네스 교란 발견·보정**: replay는 away 중 무음 리셋(전이 미기록)이라
+  `teacher_window_labels`가 away 구간을 stale-양성으로 유지 — 센서도 away에
+  꺼지므로 FN이 부풀었다(보정 전 recall 17%/8%). **gyro 샘플이 있는 윈도우만
+  채점**하도록 보정한 수치가 아래.
+- **GT 표면 채점**: browser 15세션 301윈도우 — 일치율 63.1%, precision
+  72.0%, recall 56.2%. Instagram 7세션 119윈도우 — 일치율 49.6%, precision
+  74.2%, recall 30.7%. 발화하면 대체로 맞지만(precision ~72–74%) 놓침이 많고,
+  세션 간 편차가 크다(인스타 2세션은 teacher+ 28윈도우를 전부 미탐 —
+  자세/파지 상태 의존 추정).
+- **YouTube 발화 양상** (GT 부재, 9세션 104분): 양성 0–18.8%/세션, 총 83윈도우
+  발화. **센서 경로는 YouTube에서 구조적으로 침묵하지 않는다** — AS 경로
+  (scroll 0–4건)와 대비. 단, 발화가 무지성과 상관인지는 GT가 없어 검증 불가
+  (EMA 프로브 보완 경로 유지, ADR-0010).
+- **트리거 counterfactual**: 최장 연속 양성 run이 전 세션에서 50s(YouTube)·
+  70s(browser) — 현행 dwell 90s 의미론을 10s 윈도우 연속 run으로 근사하면
+  **어느 표면에서도 체크포인트 0회**. v0 상수의 choppy한 윈도우 판정이 원인
+  (단, 윈도우 독립 판정 ↔ 기기 연속 상태 머신은 단순 환산 불가 — 근사임).
+- **한계**: ① v0 상수 미검증 초안 그대로 ② 1일차 로그는 이슈 10 수정 전
+  기기 산출물이나 GT는 replay 재실행이라 replay 의미론 기준 자기일관
+  ③ adb 스와이프는 IMU 시그니처가 없어 실사용 로그만 사용(본문 제약)
+  ④ 단일 기기·단일 일자.
+- **시사점**: 갈래 B의 질문("student가 YouTube를 커버 가능한가")에 대한 1차
+  답은 "신호는 있다, v0 상수로는 부족". 다음 단계 후보: 상수 튜닝 + 윈도우
+  스무딩(hysteresis) 후 재채점, 이후 측정 기간 로그로 보강. 채점 스크립트는
+  이슈 07 하네스 위 일회성(스크래치) — 재사용 시 stale-양성 보정을 하네스에
+  올리는 것 고려.
+
 **2026-07-19 (agent, 갈래 A 구현)**: 탐사 코드 완료 (PR
 `issue/09-as-eventtypes-probe`). 수신 타입을 `typeViewScrolled` +
 `typeWindowContentChanged`·`typeWindowStateChanged`·`typeViewSelected`로 확장
