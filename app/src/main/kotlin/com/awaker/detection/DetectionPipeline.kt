@@ -12,6 +12,8 @@ class DetectionPipeline(
     private val rule: TeacherRule,
     private val recording: RecordingController,
 ) {
+    private var lastActiveSessionId: String? = null
+
     /** AS가 관측한 스크롤 raw. tNs는 elapsedRealtimeNanos 클럭. */
     @Synchronized
     fun onScroll(tNs: Long, pkg: String, dx: Int, dy: Int) {
@@ -19,13 +21,18 @@ class DetectionPipeline(
         emit(rule.onScroll(tNs / 1_000_000))
     }
 
-    /** 폴링 주기 평가. 세션이 비활성이면 룰을 리셋한다(로그의 세션 end가 암묵적 해제). */
+    /**
+     * 폴링 주기 평가. 활성 세션이 직전 tick과 다르면 — 다른 후보 앱으로의 직행
+     * 전환이든 이탈(null)이든 — 룰을 무음 리셋한다 (ADR-0014 단일 경계).
+     */
     @Synchronized
-    fun onTick(elapsedMs: Long, sessionActive: Boolean) {
-        if (!sessionActive) {
-            rule.reset(elapsedMs) // 전이는 버린다 — 세션 파일이 이미 닫혔거나 닫히는 중
+    fun onTick(elapsedMs: Long, activeSessionId: String?) {
+        if (activeSessionId != lastActiveSessionId) {
+            lastActiveSessionId = activeSessionId
+            rule.reset(elapsedMs) // 전이는 버린다 — replay가 foreground 라인으로 같은 경계를 유도
             return
         }
+        if (activeSessionId == null) return
         emit(rule.onTick(elapsedMs))
     }
 
