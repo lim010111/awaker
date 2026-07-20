@@ -8,9 +8,11 @@ package com.awaker.checkpoint
  * - 체류 연장: 시트 닫힘 + 카운터 증가 + extensionMs(초안 60s) 후 룰이 여전히
  *   양성이면 더 높은 시트로 재표시 (ADR-0003 점진적 가림: 25% → +15%p → 70% cap)
  * - 자발 종료: 이 슬라이스에선 선택 기록 + 시트 닫힘까지만 (검증 루프는 이슈 06)
- * - 세션 종료/이탈: 카운터·가림 리셋 (AC), 표시 중이면 Dismiss
+ * - 활성 세션 변경(다른 후보로의 직행 전환 포함 — ADR-0014 단일 경계): 카운터·
+ *   가림 리셋, 표시 중이면 Dismiss
  * - 북극성 N1: 표시 후 1분 이내 후보 앱 이탈 여부 (ADR-0007) — 선택과 무관하게
- *   표시마다 한 번 판정
+ *   표시마다 한 번 판정. 후보→후보 전환은 이탈이 아니므로 판정이 리셋을
+ *   가로질러 진행된다 (ADR-0014 예외)
  *
  * 시간은 단조 ms. 폴링(5s) tick 구동이라 dwell/N1 판정에 최대 폴링 주기의
  * 지연이 있다 — 튜닝 변수 대비 무시 가능.
@@ -47,6 +49,7 @@ class CheckpointScheduler(private val config: Config = Config()) {
     private var phase: Phase = Phase.Idle
     private var extensionCount = 0
     private var pendingN1ShownAt: Long? = null
+    private var lastSessionId: String? = null
 
     val isShowing: Boolean
         get() = phase is Phase.Showing
@@ -55,8 +58,9 @@ class CheckpointScheduler(private val config: Config = Config()) {
         (config.baseHeightFraction + config.heightStepPerExtension * extensions)
             .coerceAtMost(config.maxHeightFraction)
 
-    fun onTick(nowMs: Long, sessionActive: Boolean, rulePositive: Boolean): List<Effect> {
+    fun onTick(nowMs: Long, activeSessionId: String?, rulePositive: Boolean): List<Effect> {
         val effects = mutableListOf<Effect>()
+        val sessionActive = activeSessionId != null
 
         pendingN1ShownAt?.let { shownAt ->
             if (!sessionActive) {
@@ -68,12 +72,13 @@ class CheckpointScheduler(private val config: Config = Config()) {
             }
         }
 
-        if (!sessionActive) {
+        if (activeSessionId != lastSessionId) {
+            lastSessionId = activeSessionId
             if (phase is Phase.Showing) effects += Effect.Dismiss
             phase = Phase.Idle
-            extensionCount = 0 // 세션 단위 리셋 (CONTEXT.md 점진적 가림)
-            return effects
+            extensionCount = 0 // 활성 세션 단위 리셋 (ADR-0014) — pendingN1은 예외
         }
+        if (!sessionActive) return effects
 
         when (val p = phase) {
             is Phase.Idle -> if (rulePositive) phase = Phase.Arming(nowMs)
