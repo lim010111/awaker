@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 베타 한정 수집 설정 (ADR-0004): 스크롤·화면 갱신류 이벤트만, 화면 내용
-     조회 없음. typeViewScrolled 외 타입은 이슈 09 갈래 A 탐사(진단용 임시) —
-     텍스트를 담는 타입(typeViewTextChanged 등)은 수신 자체를 하지 않는다.
-     packageNames는 폴백 — ScrollCaptureService.onServiceConnected가
-     CandidateApps.resolve(기본 셋 + 설치된 브라우저)로 런타임 갱신 (이슈 08). -->
+<!-- 베타 한정 수집 설정 (ADR-0004): 화면 내용 조회 없음. typeViewScrolled 외
+     타입은 이슈 09 갈래 A 탐사(진단용 임시) — 텍스트를 담는 타입
+     (typeViewTextChanged 등)은 수신 자체를 하지 않는다. 이 파일의 목록은 폴백 —
+     ScrollCaptureService.onServiceConnected가 packageNames를 CandidateApps.resolve
+     (기본 셋 + 설치된 브라우저, 이슈 08)로, eventTypes를 텍스트류 제외 전수
+     (PROBE_EVENT_TYPES, 2026-07-20 grill)로 런타임 갱신한다. -->
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
     android:accessibilityEventTypes="typeViewScrolled|typeWindowContentChanged|typeWindowStateChanged|typeViewSelected"
     android:accessibilityFeedbackType="feedbackGeneric"
