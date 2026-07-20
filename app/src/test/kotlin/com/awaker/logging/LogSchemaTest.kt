@@ -62,6 +62,17 @@ class LogSchemaTest {
     }
 
     @Test
+    fun `as_event line carries type name package and time`() {
+        val json = JSONObject(
+            LogSchema.asEvent(42L, "com.google.android.youtube", "TYPE_WINDOW_CONTENT_CHANGED"),
+        )
+        assertEquals("as_event", json.getString("type"))
+        assertEquals(42L, json.getLong("t"))
+        assertEquals("com.google.android.youtube", json.getString("pkg"))
+        assertEquals("TYPE_WINDOW_CONTENT_CHANGED", json.getString("et"))
+    }
+
+    @Test
     fun `screen light battery lines parse`() {
         assertEquals(true, JSONObject(LogSchema.screen(1L, true)).getBoolean("on"))
         assertEquals(12.5, JSONObject(LogSchema.light(1L, 12.5f)).getDouble("lux"), 1e-9)

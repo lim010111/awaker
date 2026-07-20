@@ -95,6 +95,11 @@ class RecordingController(
         active?.sink?.writeLine(LogSchema.scroll(tNs, pkg, dx, dy))
     }
 
+    /** AS 이벤트 타입 탐사 메타데이터 — 활성 세션 파일에만 기록 (이슈 09 갈래 A, 진단용 임시). */
+    fun onAsEvent(tNs: Long, pkg: String, eventType: String) {
+        active?.sink?.writeLine(LogSchema.asEvent(tNs, pkg, eventType))
+    }
+
     /** teacher 룰 전이 — 활성 세션 파일에만 기록 (이슈 04). */
     fun onRule(tNs: Long, state: String, metrics: com.awaker.detection.TeacherRule.Metrics, reason: String?) {
         active?.sink?.writeLine(

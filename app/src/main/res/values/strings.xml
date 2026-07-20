@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="accessibility_service_description">베타 데이터 수집 전용: 후보 앱(YouTube·Instagram·X와 이 기기에 설치된 브라우저)의 스크롤 발생 이벤트만 기록합니다. 화면 내용은 읽지 않으며, 출시 빌드에서는 이 기능 자체가 제거됩니다.</string>
+    <string name="accessibility_service_description">베타 데이터 수집 전용: 후보 앱(YouTube·Instagram·X와 이 기기에 설치된 브라우저)의 스크롤·화면 갱신 등 이벤트 발생 사실(종류·시각)만 기록합니다. 화면 내용은 읽지 않으며, 출시 빌드에서는 이 기능 자체가 제거됩니다.</string>
 </resources>
