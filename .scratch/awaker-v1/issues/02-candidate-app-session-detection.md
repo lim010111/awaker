@@ -14,7 +14,7 @@ Status: ready-for-human
 
 - [x] 후보 앱을 열면 세션 시작, 5분 룰 경과 후 세션 종료 이벤트가 기록된다 (짧은 이탈 후 복귀는 같은 세션 유지)
 - [x] 인앱 화면에서 권한 부여 상태와 세션 이력을 확인할 수 있다
-- [ ] 포그라운드 서비스가 본인 기기에서 24시간 상주 후 살아 있다 (OEM 킬러/Doze 생존)
+- [x] 포그라운드 서비스가 본인 기기에서 24시간 상주 후 살아 있다 (OEM 킬러/Doze 생존)
 - [x] 상주-대기 상태(세션 없음)의 배터리 소모 실측치가 이슈 코멘트에 기록된다
 
 ## Blocked by
@@ -48,3 +48,13 @@ Compose 화면. AC 4개는 전부 실기기 검증 대상이라 체크하지 않
 지움 — 순서 고정). 어제 저녁 기준 18h51m 무중단이었으므로 서비스가 그 뒤로
 살아 있으면 통과. 중간에 죽었던 것으로 나오면 AC3는 미달로 두고 새 APK 시계로
 측정 기간 중 재판정.
+
+**2026-07-20 (agent)**: AC3 판정 — **통과**. 설치 전 dumpsys 회수 (11:24 KST):
+TrackerService `createTime=-1d10h23m46s` (= 2026-07-19 01:00 기동, ce39a4d 설치
+직후와 일치), `lastStartId=1`·`startForegroundCount=1` — onStartCommand가 생성
+이후 1회뿐 = 프로세스 재시작 없음. **34h 24m 무중단** (OEM 킬러/Doze 생존, 그
+사이 화면 꺼짐 밤 시간 포함). 증거 전문:
+`~/.claude/jobs/f803f8ba/tmp/logs/day2/evidence/dumpsys-activity-services.txt`.
+기기 로그 52개(1일차 31 + 신규 21)도 같은 위치 `day2/logs/`에 회수 — 1일차
+회수본과 파일 단위 동일성 확인(31/31 identical). Room DB(awaker.db)도 run-as로
+회수 완료.

@@ -65,6 +65,31 @@ APK·기기 비용 0이라 병행의 추가 비용이 사실상 없다. 옵션 3
 
 ## Comments
 
+**2026-07-20 (agent, 갈래 A 실기기 판정)**: 통합 APK(ddb9a2f) 설치 후 실측 —
+**YouTube에서 AS 경로가 닫혀 있지 않다. `TYPE_WINDOW_CONTENT_CHANGED`가
+스크롤과 강하게 상관, 주요 오탐 우려원(자동재생)은 침묵.**
+
+- **스와이프 상관** (adb 스크립트, 스와이프는 AS 이벤트를 발생시킴 — Chrome
+  대조 전례): 홈피드 플링 8회 → content-changed **35건/8.5s** (~4/s),
+  Shorts 스와이프 6회 → **26건/15.4s**. scroll 레코드는 여전히 0 (1일차와
+  동일 — TYPE_VIEW_SCROLLED 무방출 재확인). `TYPE_VIEW_SELECTED` 1건이
+  Shorts 탭 진입 순간과 일치 — 표면 전환 마커로 쓸 수 있는 부수 신호.
+- **아이들 대조군** (무입력): 홈피드 23s → content-changed **1건**, **Shorts
+  자동재생 20s → 0건**. 비디오 재생 자체는 content-changed를 방출하지 않음 —
+  "스크롤 프록시"의 1차 오탐 우려가 이 데이터셋에선 부재.
+- **대조 표면 동시 관측**: Chrome scroll 317 + content-changed 170,
+  sbrowser scroll 283 + content-changed 245 (같은 세션 파일) — scroll이 있는
+  표면에서도 as_event가 나란히 찍혀 교차 검증 가능.
+- **rate cap 실효**: 최소 간격 정확히 200ms(캡이 실제로 자름), 지속 플링
+  165s 부하에서 1초 피크 5건(=캡 상한), 세션 최대 253건 — 홍수·배터리 폭주
+  양상 없음. 배터리 회귀는 측정 기간 보조망으로 계속 관찰.
+- **판정**: "아무것도 안 찍힘"이 아니라 반대 결과 — teacher 룰의 YouTube
+  프록시 후보로 content-changed 빈도 신호가 성립할 가능성. **존속(정식
+  프록시 채택, 별도 이슈/ADR) vs 제거는 사람 결정 대기.** 단, 이벤트에
+  스크롤 방향·크기 정보는 없어(메타데이터만) 운동학 기반 룰의 직접 대체는
+  아니고 빈도 기반 근사가 될 것. 로그: `day2/parity`(시나리오 A)·
+  `parity-b`(B)·`idle-c`(대조군) — `~/.claude/jobs/f803f8ba/tmp/logs/`.
+
 **2026-07-20 (agent, 갈래 B 지표 보강 — merge-gate finding 수용)**: 리뷰 지적
 "sampled 마스크가 분모를 평가 대상 신호(gyro 유무)로 조건화 — 센서 드롭아웃
 실패를 통계에서 지울 수 있다"를 데이터로 검증하고 지표를 커버리지/분류 2단으로

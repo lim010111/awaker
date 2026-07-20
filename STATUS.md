@@ -6,16 +6,18 @@ outside the narrative block; mechanical sections are regenerated every run._
 <!-- narrative:start -->
 ## Current focus
 
-**이슈 09·10 방향 그릴 완료, 구현 대기** (2026-07-19). 1일차 검증에서 나온 중대 발견 2건의 대응을 확정: ① 이슈 10 — 세션-스코프 상태(룰 윈도우·체크포인트 겨냥·시트·가림 카운터)를 **"활성 세션 변경" 단일 경계**로 통일 (ADR-0014, CONTEXT.md [[활성 세션]] 용어 추가). replay는 이미 이 의미론이라 무변경 — 기기를 replay에 맞춘다. ② 이슈 09 — **병행**: AS eventTypes 확장 탐사(갈래 A, APK)+ 센서 단독 백테스트(갈래 B, 오프라인). 측정 프로토콜은 이 수정들 이후로 연기 (유저 결정). 1일차 실측 요약: 서비스 18h51m 무중단, 배터리 11.4mAh/일(0.3%), 세션 31개, 체크포인트 19회, N1 42%(목표 50%+). 활성 트랙: awaker-v1 (`.scratch/awaker-v1/issues/`).
+**실기기 검증 2일차 완료 — 측정 기간 진입 가능** (2026-07-20). PR #9·#10 머지, 통합 APK(ddb9a2f) 설치·서비스 기동. 판정 결과: ① 이슈 02 닫힘(24h 생존 34h24m) ② 이슈 10 파리티 **합격**(인터리브 6세션 전부 replay 일치, 체크포인트 오귀속 해소 확인 — 이슈 10 2026-07-20 코멘트) ③ 이슈 09 갈래 A **신호 있음**(YouTube content-changed가 스크롤과 상관, 자동재생 오탐 없음, rate cap 실효 — 이슈 09 2026-07-20 코멘트) ④ 이슈 06 AC1 확정. 활성 트랙: awaker-v1 (`.scratch/awaker-v1/issues/`).
 
 ## Start here next session
 
-- 능동: **이슈 09·10 구현** — 이슈당 PR 1개 (10: 단일 경계 리셋+재겨냥, 09: 갈래 A 탐사+고지 갱신). 범위·검증 계획은 각 이슈 파일 본문 확정본 참조. 병행으로 갈래 B(gyro 백테스트, 1일차 로그로 오프라인) 시작 가능.
-- 머지 후 USB 연결 1회에: 구 APK 24h 증거 회수(이슈 02 AC3, **설치 전 필수** — 이슈 02 코멘트) → 통합 APK 설치 → adb 인터리브 시나리오로 replay 파리티 합격 판정(이슈 10 검증 계획).
-- 병행(같은 연결에서): 어제 저녁 자발 종료 실행 로그 확정(이슈 06 AC1), 이후 측정 기간에 브라우저 정독 오탐 체감(이슈 08 AC4)·슬롯 실물 확인(이슈 05 AC2).
+- 능동: **갈래 A 존속/제거 grill** (이슈 09 — 판정 데이터 확보 완료, content-changed 빈도 프록시 채택 시 별도 이슈/ADR) + **측정 프로토콜 시작 여부 결정** (그릴에서 "수정들 이후로 연기"했던 것 — 수정·검증 완료로 전제 충족).
+- 병행(측정 기간): 브라우저 정독 오탐 체감(이슈 08 AC4)·슬롯 실물 확인(이슈 05 AC2)·환기 사운드 정지 체감(이슈 06 AC3 — stop 로그 구조적 불가, 유저 체감 필요)·이슈 10 보조망(실사용 로그 재대조)·갈래 B 상수 튜닝 재채점(이슈 09 코멘트).
 
 ## Open decisions
 
+- 이슈 09 갈래 A 존속/제거 — 실측 데이터 확보 완료(신호 있음), 채택 형태(빈도 근사 프록시)와 범위는 grill 필요.
+- 이슈 09·10 종결 형식 — AC 체크박스가 없는(0/0) 이슈의 닫음 처리 규약 미정 (merge-gate finding도 지적).
+- Room choice row 경합 (medium, 비차단, validator unsure) — 이번 검증에선 탭 없음이라 미관찰, 구 APK choice 2건은 DB·로그 정합. 후속 수정 여부 사람 결정 (PR #9 표면화 항목).
 - G2 오탐 신고 UI의 자리 — 체크포인트 "선택지 2개" 철학(CONTEXT.md)과 ADR-0007 신고 가드레일의 긴장. v1 출시 전 grill 필요 (프로토타입 비차단).
 - ADR-0009 (자체 백엔드: 인증/로깅/호스팅) — 출시 전 별도 grill. ADR-0008 출시 전 체크리스트 4항목도 동반.
 - 베타 확장 빌드 범위 (동의 플로우·로그 업로드·EMA 프로브 UI) — 1차 코호트 데이터를 보고 결정.
@@ -24,16 +26,16 @@ outside the narrative block; mechanical sections are regenerated every run._
 
 ## awaker-v1
 
-`████████████████░░░░░░` 23/32 acceptance criteria met (72%)
+`█████████████████░░░░░` 25/32 acceptance criteria met (78%)
 
 | # | Issue | Triage | Criteria | State | Blocked by |
 |---|-------|--------|----------|-------|-----------|
 | 01 | 01 — 문서 위생 정리: 낡은 기획 산출물의 오염원 제거 | `ready-for-agent` | 3/3 | ✅ done | — |
-| 02 | 02 — 후보 앱 세션 감지: 포그라운드 서비스 + 세션 상태 머신 | `ready-for-human` | 3/4 | 🔵 in-progress | — |
+| 02 | 02 — 후보 앱 세션 감지: 포그라운드 서비스 + 세션 상태 머신 | `ready-for-human` | 4/4 | ✅ done | — |
 | 03 | 03 — 센서 raw 로깅 + 수동 export: replay 가능한 공통 타임라인 | `ready-for-human` | 4/4 | ✅ done | #02 |
 | 04 | 04 — AS 스크롤 운동학 수집 + teacher 룰 v0 | `ready-for-human` | 3/4 | 🔵 in-progress | #03 |
 | 05 | 05 — 체크포인트 오버레이 + 체류 연장 + 북극성 N1 측정 | `ready-for-human` | 4/5 | 🔵 in-progress | #04 |
-| 06 | 06 — 자발 종료 + 환기 사운드: face-down 검증 루프 | `ready-for-human` | 1/4 | 🔵 in-progress | #05 |
+| 06 | 06 — 자발 종료 + 환기 사운드: face-down 검증 루프 | `ready-for-human` | 2/4 | 🔵 in-progress | #05 |
 | 07 | 07 — 오프라인 replay 하네스: 로깅 스키마 AC의 집행자 | `ready-for-human` | 4/4 | ✅ done | #04 |
 | 08 | 08 — 브라우저 후보 앱 동적 확장: 설치된 브라우저 자동 탐지 | `ready-for-human` | 1/4 | 🔵 in-progress | #02 |
 | 09 | 09 — YouTube AS-scroll 공백: 대표 무지성 표면이 teacher 룰 사각지대 | `ready-for-agent` | 0/0 | ❔ unknown | — |
