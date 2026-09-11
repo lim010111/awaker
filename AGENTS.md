@@ -2,8 +2,7 @@
 
 Agent guidance for the Awaker repo.
 
-**Read `STATUS.md` first when starting work** — current active track, next action
-(*Start here next session*), and open decisions live there.
+When resuming planning, read the current STATUS.md narrative pointer. For a specified issue, start there; read the full board when needed.
 
 ## Agent skills
 
