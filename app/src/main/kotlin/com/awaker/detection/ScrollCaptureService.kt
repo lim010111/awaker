@@ -14,7 +14,9 @@ import com.awaker.core.CandidateApps
  *
  * TYPE_VIEW_SCROLLED 외 타입은 이슈 09 갈래 A의 탐사(진단용 임시): YouTube가
  * 실제 방출하는 이벤트를 실측하기 위해 메타데이터(타입·패키지·시각)만
- * rate cap을 걸어 기록한다.
+ * rate cap을 걸어 기록한다. 수신 마스크는 텍스트류 제외 전수 — 후보 신호를
+ * 미리 좁히지 않기 위해서다 (2026-07-20 grill). 승격 시 채택 신호만 남기고
+ * 도로 좁힌다.
  */
 class ScrollCaptureService : AccessibilityService() {
 
@@ -22,9 +24,11 @@ class ScrollCaptureService : AccessibilityService() {
     private val probe = AsEventProbe()
 
     override fun onServiceConnected() {
-        // 정적 XML의 packageNames는 폴백 — 설치된 브라우저까지 런타임 확장 (이슈 08).
+        // 정적 XML의 packageNames·eventTypes는 폴백 — 패키지는 설치된 브라우저까지
+        // (이슈 08), 수신 타입은 텍스트류 제외 전수로 런타임 확장 (이슈 09 탐사).
         serviceInfo = serviceInfo.apply {
             packageNames = CandidateApps.resolve(packageManager).toTypedArray()
+            eventTypes = PROBE_EVENT_TYPES
         }
     }
 
@@ -46,4 +50,19 @@ class ScrollCaptureService : AccessibilityService() {
     }
 
     override fun onInterrupt() = Unit
+
+    companion object {
+        /**
+         * 탐사 수신 마스크: 전수에서 *내용(텍스트)을 담는 것이 본질인 타입*만 제외.
+         * 기록은 어차피 메타데이터(타입·패키지·시각)뿐이지만, 이 타입들은 수신
+         * 자체를 하지 않는다 — 최소 수집 원칙 (accessibility_service_config.xml).
+         */
+        val PROBE_EVENT_TYPES: Int = AccessibilityEvent.TYPES_ALL_MASK and
+            (AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED or
+                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED or
+                AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY or
+                AccessibilityEvent.TYPE_ANNOUNCEMENT or
+                AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED or
+                AccessibilityEvent.TYPE_ASSIST_READING_CONTEXT).inv()
+    }
 }
