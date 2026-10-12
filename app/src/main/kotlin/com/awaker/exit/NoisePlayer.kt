@@ -7,7 +7,7 @@ import android.media.AudioTrack
 import kotlin.random.Random
 
 /**
- * 환기 사운드 v0 — 핑크 노이즈 합성 재생 (이슈 06). CONTEXT.md 번들 풀의
+ * 환기 사운드 v0 — 핑크 노이즈 합성 재생 (이슈 06). GLOSSARY.md 번들 풀의
  * 백색/핑크 노이즈 항목을 에셋 없이 런타임 합성으로 충당한다 (전체 5~10개
  * 풀·사용자 MP3·수면 모드는 v1 범위로 이연). Paul Kellet economy 필터.
  */

@@ -3,7 +3,7 @@ package com.awaker.exit
 /**
  * 자발 종료 검증 루프 (이슈 06, 순수 Kotlin). 선택이 아니라 **검증된 행동**이
  * 종료 조건이다: 자발 종료를 골라도 face-down을 하지 않으면 세션은 리셋되지
- * 않는다 (CONTEXT.md 자발 종료 정의).
+ * 않는다 (GLOSSARY.md 자발 종료 정의).
  *
  * - 검증: 가속도 z축이 faceDownZ 이하(화면이 바닥을 향함)로 holdMs 유지 → 성공.
  *   verifyTimeoutMs 안에 못 하면 실패.

@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 
 /**
  * 체크포인트 바텀 시트 (이슈 05). 멈춤을 강요하지 않는다 — 사실 인용 메시지 +
- * 선택지 딱 둘 (CONTEXT.md 체크포인트 철학).
+ * 선택지 딱 둘 (GLOSSARY.md 체크포인트 철학).
  */
 @Composable
 fun CheckpointSheet(

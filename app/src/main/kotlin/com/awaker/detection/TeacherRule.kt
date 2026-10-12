@@ -6,7 +6,7 @@ import java.util.ArrayDeque
  * Teacher 룰 v0 — AS 스크롤 운동학 기반 무지성 스크롤 판정 (순수 Kotlin).
  * ADR-0010의 dense 라벨원이자 ADR-0011의 프로토타입 라이브 트리거.
  *
- * 판정 직관(CONTEXT.md 예시 대화): "2초 간격으로 반사적으로 넘기고 멈춤이
+ * 판정 직관(GLOSSARY.md 예시 대화): "2초 간격으로 반사적으로 넘기고 멈춤이
  * 없으면 무지성. 속도 변화가 있고 멈춰서 읽는 구간이 있으면 아님."
  *
  * v0 수식 (초안 — 임계는 본인 데이터 self-annotation으로 1차 튜닝, [Config]):

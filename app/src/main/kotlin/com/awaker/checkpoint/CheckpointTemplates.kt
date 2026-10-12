@@ -5,11 +5,11 @@ package com.awaker.checkpoint
  * ADR-0001의 prefetch 구조는 이 선택 지점(표시 직전 렌더)으로 뼈대만 유지하고,
  * 신뢰도 곡선 기반 prefetch는 미검증(ADR-0011). 실측 수치(누적 분 버킷, N번째
  * 연장)는 시스템이 주입한다 — LLM 환각으로부터 사실 수치를 분리하는 슬롯 원칙
- * (CONTEXT.md 메시지 슬롯)의 stub 버전.
+ * (GLOSSARY.md 메시지 슬롯)의 stub 버전.
  */
 object CheckpointTemplates {
 
-    /** 누적 분 → 구간 라벨 (CONTEXT.md 버킷팅 — raw 수치 대신 구간). */
+    /** 누적 분 → 구간 라벨 (GLOSSARY.md 버킷팅 — raw 수치 대신 구간). */
     fun minutesBucket(elapsedMinutes: Long): String = when {
         elapsedMinutes < 5 -> "5분이 안 되게"
         elapsedMinutes < 10 -> "5분에서 10분쯤"
