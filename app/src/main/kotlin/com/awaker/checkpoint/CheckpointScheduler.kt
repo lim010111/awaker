@@ -3,7 +3,7 @@ package com.awaker.checkpoint
 /**
  * 체크포인트 발동 상태 머신 (이슈 05의 핵심, 순수 Kotlin).
  *
- * - 발동: teacher 룰 양성이 dwell(초안 90s) 동안 유지되면 표시 (CONTEXT.md
+ * - 발동: teacher 룰 양성이 dwell(초안 90s) 동안 유지되면 표시 (GLOSSARY.md
  *   "신뢰도 × 체류" — 프로토타입에선 룰 양성이 신뢰도 게이트를 대행, ADR-0011)
  * - 체류 연장: 시트 닫힘 + 카운터 증가 + extensionMs(초안 60s) 후 룰이 여전히
  *   양성이면 더 높은 시트로 재표시 (ADR-0003 점진적 가림: 25% → +15%p → 70% cap)

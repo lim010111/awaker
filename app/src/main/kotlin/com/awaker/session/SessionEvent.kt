@@ -34,7 +34,7 @@ sealed interface SessionEvent {
 }
 
 enum class EndReason {
-    /** 5분 이상 포그라운드를 떠남 (CONTEXT.md 세션 정의). */
+    /** 5분 이상 포그라운드를 떠남 (GLOSSARY.md 세션 정의). */
     AWAY_TIMEOUT,
 
     /** 자발 종료 검증 성공 (이슈 06에서 연결). */

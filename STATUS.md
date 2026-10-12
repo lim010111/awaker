@@ -18,7 +18,7 @@ outside the narrative block; mechanical sections are regenerated every run._
 - 이슈 09 갈래 A 존속/제거 — 실측 데이터 확보 완료(신호 있음), 채택 형태(빈도 근사 프록시)와 범위는 grill 필요.
 - 이슈 09·10 종결 형식 — AC 체크박스가 없는(0/0) 이슈의 닫음 처리 규약 미정 (merge-gate finding도 지적).
 - Room choice row 경합 (medium, 비차단, validator unsure) — 이번 검증에선 탭 없음이라 미관찰, 구 APK choice 2건은 DB·로그 정합. 후속 수정 여부 사람 결정 (PR #9 표면화 항목).
-- G2 오탐 신고 UI의 자리 — 체크포인트 "선택지 2개" 철학(CONTEXT.md)과 ADR-0007 신고 가드레일의 긴장. v1 출시 전 grill 필요 (프로토타입 비차단).
+- G2 오탐 신고 UI의 자리 — 체크포인트 "선택지 2개" 철학(GLOSSARY.md)과 ADR-0007 신고 가드레일의 긴장. v1 출시 전 grill 필요 (프로토타입 비차단).
 - ADR-0009 (자체 백엔드: 인증/로깅/호스팅) — 출시 전 별도 grill. ADR-0008 출시 전 체크리스트 4항목도 동반.
 - 베타 확장 빌드 범위 (동의 플로우·로그 업로드·EMA 프로브 UI) — 1차 코호트 데이터를 보고 결정.
 

@@ -5,7 +5,7 @@ package com.awaker.core
  * 허용한다 — 프로토타입에선 상수로 두고, 조정 UI는 베타 확장에서 결정.
  */
 object Tunables {
-    /** 세션 종료 판정 — 후보 앱이 포그라운드를 떠나 있어야 하는 최소 시간 (CONTEXT.md 세션 정의). */
+    /** 세션 종료 판정 — 후보 앱이 포그라운드를 떠나 있어야 하는 최소 시간 (GLOSSARY.md 세션 정의). */
     const val SESSION_AWAY_GRACE_MS: Long = 5 * 60_000L
 
     /** 화면 켜짐 상태의 포그라운드 앱 폴링 주기. */
